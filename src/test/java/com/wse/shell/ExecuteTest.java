@@ -8,7 +8,7 @@ public class ExecuteTest
 	@Test
 	public void testExecuteCommand()
 	{
-		Exceute execute = new Exceute();
+		Execute execute = new Execute();
 		String result = execute.executeCommand("ls -lrt"); 
 		Assert.assertNotNull(result);
 		System.out.println(result);
