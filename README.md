@@ -5,3 +5,4 @@
       - http://www.mkyong.com/java/how-to-execute-shell-command-from-java/
       - http://alvinalexander.com/java/edu/pj/pj010016
     - jsoup - http://jsoup.org/cookbook/input/load-document-from-file
+    - Java caching system - https://commons.apache.org/proper/commons-jcs/
