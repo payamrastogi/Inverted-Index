@@ -2,8 +2,12 @@ package com.wse.parse;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.BreakIterator;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -19,14 +23,37 @@ public class Parser
 		try
 		{
 			Document document = Jsoup.parse(inputFile, "UTF-8");
-			String[] s = document.text().split("[\\s@&.?$+-:;]+");
-			ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(s));
-			System.out.println(arrayList);
+			BreakIterator boundary = BreakIterator.getWordInstance();
+	        boundary.setText(document.text());
+	        List<String> words = getWords(boundary, document.text());
+	        Map<String ,WordIndex> postingMap = generatePostingList(words,IDGenerator.getDocumentID());
+	        System.out.println(postingMap);
 		}
 		catch(IOException e)
 		{
 			logger.error("IOException", e.getMessage());
 		}
 	}
-
+	
+	public static List<String> getWords(BreakIterator boundary, String source) {
+		List<String> words = new ArrayList<String>();
+	    int start = boundary.first();
+	    for (int end = boundary.next(); end != BreakIterator.DONE; start = end, end = boundary.next()) {
+	    	System.out.println(source.substring(start,end));
+	        words.add(source.substring(start,end));
+	    }
+	    return words;
+	 }
+	
+	public static Map<String, WordIndex> generatePostingList(List<String> words, String docId) {
+		Map<String, WordIndex> postingMap = new HashMap<String, WordIndex>();
+		for (String word : words) {
+			if (word == null || word.trim().isEmpty())
+				continue;
+			if (!postingMap.containsKey(word)) {
+				postingMap.put(word, new WordIndex(word, docId, Collections.frequency(words, word)));
+			}
+		}
+		return postingMap;
+	}
 }
