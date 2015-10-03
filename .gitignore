@@ -2,4 +2,5 @@
 *.classpath
 *.project
 *.ser
+/.settings/*
 /target/
