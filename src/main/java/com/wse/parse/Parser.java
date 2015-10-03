@@ -18,7 +18,7 @@ public class Parser
 {
 	private Logger logger = LoggerFactory.getLogger(Parser.class);
 	
-	public void parseDoc(File inputFile)
+	public void parseDocFromFile(File inputFile)
 	{
 		try
 		{
@@ -35,22 +35,38 @@ public class Parser
 		}
 	}
 	
-	public static List<String> getWords(BreakIterator boundary, String source) {
+	public Map<String, WordIndex> parseDocFromText(String text)
+	{
+		Document document = Jsoup.parse(text, "UTF-8");
+		BreakIterator boundary = BreakIterator.getWordInstance();
+		boundary.setText(document.text());
+		List<String> words = getWords(boundary, document.text());
+		Map<String ,WordIndex> postingMap = generatePostingList(words,IDGenerator.getDocumentID());
+		logger.debug(postingMap.toString());
+		return postingMap;
+	}
+	
+	public List<String> getWords(BreakIterator boundary, String source)
+	{
 		List<String> words = new ArrayList<String>();
 	    int start = boundary.first();
-	    for (int end = boundary.next(); end != BreakIterator.DONE; start = end, end = boundary.next()) {
-	    	System.out.println(source.substring(start,end));
+	    for (int end = boundary.next(); end != BreakIterator.DONE; start = end, end = boundary.next()) 
+	    {
+	    	//logger.debug(source.substring(start,end));
 	        words.add(source.substring(start,end));
 	    }
 	    return words;
 	 }
 	
-	public static Map<String, WordIndex> generatePostingList(List<String> words, String docId) {
+	public Map<String, WordIndex> generatePostingList(List<String> words, String docId)
+	{
 		Map<String, WordIndex> postingMap = new HashMap<String, WordIndex>();
-		for (String word : words) {
+		for (String word : words)
+		{
 			if (word == null || word.trim().isEmpty())
 				continue;
-			if (!postingMap.containsKey(word)) {
+			if (!postingMap.containsKey(word)) 
+			{
 				postingMap.put(word, new WordIndex(word, docId, Collections.frequency(words, word)));
 			}
 		}

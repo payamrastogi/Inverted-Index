@@ -11,6 +11,6 @@ public class ParserTest
 	{
 		File inputFile = new File("src/test/resources/test.html");
 		Parser parser = new Parser();
-		parser.parseDoc(inputFile);
+		parser.parseDocFromFile(inputFile);
 	}
 }

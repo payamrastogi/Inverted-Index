@@ -11,36 +11,18 @@ public class WordIndex {
 		this.count = count;
 	}
 	
-	public WordIndex() {
-		this.word = null;
-		this.docId = null;
-		this.count = 0;
-	}
-	
 	public String getWord() {
 		return word;
-	}
-
-	public void setWord(String word) {
-		this.word = word;
 	}
 
 	public String getDocId() {
 		return docId;
 	}
-
-	public void setDocId(String docId) {
-		this.docId = docId;
-	}
 	
 	public int getCount() {
 		return count;
 	}
-
-	public void setCount(int count) {
-		this.count = count;
-	}
-
+	
 	@Override
 	public String toString() {
 		return "WordIndex : word = " + this.word + " : docId = " + this.docId +" : Count : "+ this.count;
