@@ -2,6 +2,8 @@ package com.wse.parse;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -17,7 +19,9 @@ public class Parser
 		try
 		{
 			Document document = Jsoup.parse(inputFile, "UTF-8");
-			System.out.println(document.text());
+			String[] s = document.text().split("[\\s@&.?$+-:;]+");
+			ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(s));
+			System.out.println(arrayList);
 		}
 		catch(IOException e)
 		{
