@@ -2,10 +2,10 @@ package com.wse.parse;
 
 public class WordIndex {
 	private String word;
-	private String docId;
+	private int docId;
 	private int count;
 	
-	public WordIndex(String word, String docId, int count) {
+	public WordIndex(String word, int docId, int count) {
 		this.word = word;
 		this.docId = docId;
 		this.count = count;
@@ -15,7 +15,7 @@ public class WordIndex {
 		return word;
 	}
 
-	public String getDocId() {
+	public int getDocId() {
 		return docId;
 	}
 	

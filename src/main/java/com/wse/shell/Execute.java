@@ -3,8 +3,7 @@ package com.wse.shell;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.BlockingQueue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,13 +12,18 @@ import com.wse.util.ElapsedTime;
 
 public class Execute 
 {
+	private BlockingQueue<String> pathQueue;
 	private Logger logger = LoggerFactory.getLogger(Execute.class);
-	public List<String> executeCommand(String command) 
+	
+	public Execute(BlockingQueue<String> pathQueue)
+	{
+		this.pathQueue = pathQueue;
+	}
+	
+	public void executeCommand(String command) 
 	{
 		ElapsedTime elapsedTime = new ElapsedTime();
 		logger.debug("executeCommand");
-		List<String> list = null;
-		StringBuffer output = new StringBuffer();
 		Process process;
 		try 
 		{
@@ -28,11 +32,9 @@ public class Execute
 			try(BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream())))
 			{
 				String line = "";
-				list = new ArrayList<>(100);
 				while ((line = reader.readLine())!= null) 
 				{
-					list.add(line);
-					//output.append(line + "\n");
+					pathQueue.add(line);
 				}
 			}
 		} 
@@ -45,6 +47,5 @@ public class Execute
 			logger.error(e.getMessage());
 		}
 		logger.debug("Total Time: "+elapsedTime.getTotalTimeInSeconds()+" seconds");
-		return list;
 	}
 }

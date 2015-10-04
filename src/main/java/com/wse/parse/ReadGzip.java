@@ -12,9 +12,10 @@ import org.slf4j.LoggerFactory;
 
 import com.wse.util.ElapsedTime;
 
-public class ReadGZIP 
-{
-	private Logger logger = LoggerFactory.getLogger(ReadGZIP.class);
+public class ReadGzip 
+{	
+	private Logger logger = LoggerFactory.getLogger(ReadGzip.class);
+	
 	public StringBuffer read(File file)
 	{
 		ElapsedTime elapsedTime = new ElapsedTime();
@@ -39,3 +40,5 @@ public class ReadGZIP
 		return stringBuffer;
 	}
 }	
+
+
