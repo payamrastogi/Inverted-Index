@@ -30,7 +30,7 @@ public class ThreadedParser implements Runnable
 				StringBuffer content = null;
 				while((content=this.contentQueue.poll(1, TimeUnit.SECONDS))!=null)
 				{
-					postingQueue.add(new Pair<Integer, Multiset<String>>(SequenceGenerator.getNextInSequence(), parser.parseText(content)));
+					postingQueue.add(new Pair<Integer, Multiset<String>>(SequenceGenerator.getNextInSequence(this.getClass()), parser.parseText(content)));
 				}
 			}
 			catch(InterruptedException e)

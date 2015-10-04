@@ -4,15 +4,20 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Multiset;
+import com.wse.io.ThreadedWriter;
+import com.wse.io.Writer;
 import com.wse.parse.Parser;
+import com.wse.parse.Posting;
 import com.wse.parse.ReadGzip;
 import com.wse.parse.ThreadedParser;
+import com.wse.parse.ThreadedPosting;
 import com.wse.parse.ThreadedReadGzip;
 import com.wse.shell.Execute;
 import com.wse.util.ElapsedTime;
@@ -25,9 +30,12 @@ public class Main
 	private BlockingQueue<String> pathQueue;
 	private BlockingQueue<StringBuffer> contentQueue;
 	private BlockingQueue<Pair<Integer, Multiset<String>>> postingQueue;
+	private BlockingQueue<String> priorityQueue;
 	
 	private Parser parser;
 	private ReadGzip readGzip;
+	private Posting posting; 
+	private Writer writer;
 	
 	private Logger logger = LoggerFactory.getLogger(Main.class);
 	
@@ -36,8 +44,12 @@ public class Main
 		this.pathQueue = new ArrayBlockingQueue<>(1000);
 		this.contentQueue = new ArrayBlockingQueue<>(1000);
 		this.postingQueue = new ArrayBlockingQueue<>(100000);
+		this.priorityQueue = new PriorityBlockingQueue<String>();
+		
 		this.readGzip = new ReadGzip();
 		this.parser = new Parser();
+		this.posting = new Posting(priorityQueue);
+		this.writer = new Writer();
 	}
 	
 	public static void main(String args[]) throws InterruptedException
@@ -58,9 +70,14 @@ public class Main
 		executor.submit(new ThreadedReadGzip(readGzip, pathQueue, contentQueue));
 		for(int i=0;i<15;i++)
 			executor.submit(new ThreadedParser(parser, contentQueue, postingQueue));
+		executor.submit(new ThreadedPosting(posting, postingQueue));
+		//executor.submit(new ThreadedPosting(posting, postingQueue));
+		for(int i=0;i<30;i++)
+			executor.submit(new ThreadedWriter(writer, priorityQueue));
 		executor.shutdownNow();
-	    executor.awaitTermination(100, TimeUnit.SECONDS);
+	    executor.awaitTermination(200, TimeUnit.SECONDS);
 	    System.out.println(pathQueue.size());
 		System.out.println(postingQueue.size());
+		System.out.println(priorityQueue.size());
 	}
 }

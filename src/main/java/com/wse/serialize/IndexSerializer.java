@@ -1,4 +1,4 @@
-package com.wse.parse;
+package com.wse.serialize;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

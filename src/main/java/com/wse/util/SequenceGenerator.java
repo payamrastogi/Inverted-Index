@@ -1,14 +1,19 @@
 package com.wse.util;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+
 
 public final class SequenceGenerator 
 {
-	private static final AtomicInteger sequence= new AtomicInteger(1);
+	@SuppressWarnings("rawtypes")
+	private static final ConcurrentHashMap<Class,AtomicInteger> mapper = new ConcurrentHashMap<Class,AtomicInteger>();
+	
 	private SequenceGenerator(){}
 	
-	public static int getNextInSequence() 
+	public static int getNextInSequence(@SuppressWarnings("rawtypes") Class className) 
 	{
-		return sequence.getAndIncrement();
+		 mapper.putIfAbsent(className, new AtomicInteger(1));
+	        return mapper.get(className).getAndIncrement();
 	}
 }
