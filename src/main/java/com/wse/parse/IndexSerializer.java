@@ -35,7 +35,7 @@ public class IndexSerializer {
 	}
 	
 	public static void main(String[] args) {
-		WordIndex indexObject = new WordIndex("Hello","xyz",2);
+		WordIndex indexObject = new WordIndex("Hello",1,2);
 		IndexSerializer.indexSerialize(indexObject);
 		WordIndex retrivedObject = IndexSerializer.indexDeserialize();
 		System.out.println(retrivedObject);

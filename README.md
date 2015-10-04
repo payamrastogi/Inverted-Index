@@ -9,3 +9,5 @@
     - Java caching system - https://commons.apache.org/proper/commons-jcs/
     - Unique Document ID : http://www.javapractices.com/topic/TopicAction.do?Id=56
     - BreakIterator : http://docs.oracle.com/javase/6/docs/api/java/text/BreakIterator.html
+    - SequenceGenerator - http://codereview.stackexchange.com/questions/54641/thread-safe-integer-sequence
+	- Guava - https://code.google.com/p/guava-libraries/wiki/NewCollectionTypesExplained#Multiset

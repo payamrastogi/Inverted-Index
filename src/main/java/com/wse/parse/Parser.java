@@ -1,75 +1,28 @@
 package com.wse.parse;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.BreakIterator;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Splitter;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
+import com.wse.util.ElapsedTime;
+
 public class Parser 
-{
-	private Logger logger = LoggerFactory.getLogger(Parser.class);
-	
-	public void parseDocFromFile(File inputFile)
+{	
+	private final Logger logger = LoggerFactory.getLogger(Parser.class);
+	public Multiset<String> parseText(StringBuffer content)
 	{
-		try
-		{
-			Document document = Jsoup.parse(inputFile, "UTF-8");
-			BreakIterator boundary = BreakIterator.getWordInstance();
-	        boundary.setText(document.text());
-	        List<String> words = getWords(boundary, document.text());
-	        Map<String ,WordIndex> postingMap = generatePostingList(words,IDGenerator.getDocumentID());
-	        System.out.println(postingMap);
-		}
-		catch(IOException e)
-		{
-			logger.error("IOException", e.getMessage());
-		}
-	}
-	
-	public Map<String, WordIndex> parseDocFromText(String text)
-	{
-		Document document = Jsoup.parse(text, "UTF-8");
-		BreakIterator boundary = BreakIterator.getWordInstance();
-		boundary.setText(document.text());
-		List<String> words = getWords(boundary, document.text());
-		Map<String ,WordIndex> postingMap = generatePostingList(words,IDGenerator.getDocumentID());
-		logger.debug(postingMap.toString());
-		return postingMap;
-	}
-	
-	public List<String> getWords(BreakIterator boundary, String source)
-	{
-		List<String> words = new ArrayList<String>();
-	    int start = boundary.first();
-	    for (int end = boundary.next(); end != BreakIterator.DONE; start = end, end = boundary.next()) 
-	    {
-	    	//logger.debug(source.substring(start,end));
-	        words.add(source.substring(start,end));
-	    }
-	    return words;
-	 }
-	
-	public Map<String, WordIndex> generatePostingList(List<String> words, String docId)
-	{
-		Map<String, WordIndex> postingMap = new HashMap<String, WordIndex>();
-		for (String word : words)
-		{
-			if (word == null || word.trim().isEmpty())
-				continue;
-			if (!postingMap.containsKey(word)) 
-			{
-				postingMap.put(word, new WordIndex(word, docId, Collections.frequency(words, word)));
-			}
-		}
-		return postingMap;
+		ElapsedTime elapsedTime = new ElapsedTime();
+		Document document = Jsoup.parse(content.toString(), "UTF-8");
+		Multiset<String>  set =  HashMultiset.create(Splitter.on(CharMatcher.WHITESPACE)
+			        						.trimResults(CharMatcher.is('.'))
+			        						.omitEmptyStrings()
+			        						.split(document.text()));
+		logger.debug("Total Time: "+elapsedTime.getTotalTimeInSeconds()+" seconds");
+		return set;
 	}
 }
