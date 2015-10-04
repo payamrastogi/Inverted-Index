@@ -1,4 +1,4 @@
-package com.wse.parse;
+package com.wse.serialize;
 
 public class WordIndex {
 	private String word;
