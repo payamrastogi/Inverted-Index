@@ -29,7 +29,7 @@ import com.wse.util.Pair;
 
 public class Main
 {
-	private static final String configPropPath = "/src/main/resources/config.properties";
+	private static final String configPropPath = "src/main/resources/config.properties";
 	private BlockingQueue<String> pathQueue;
 	private BlockingQueue<StringBuffer> contentQueue;
 	private BlockingQueue<Pair<Integer, Multiset<String>>> postingQueue;
