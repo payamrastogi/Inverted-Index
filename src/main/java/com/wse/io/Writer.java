@@ -22,9 +22,9 @@ public class Writer
 	private final static int MAX_SIZE = 1024*1024*1024;
 	private int currentSize = 0;
 	
-	public Writer()
+	public Writer(String filePath)
 	{
-		this.filePath = "/home/jenil/Desktop/Fall 2015/Web Search/Inverted-Index/output";
+		this.filePath = filePath;
 		this.outputFile = new File(filePath, ""+SequenceGenerator.getNextInSequence(Writer.class));
 	}
 	

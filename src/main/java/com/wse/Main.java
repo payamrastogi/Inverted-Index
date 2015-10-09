@@ -58,7 +58,7 @@ public class Main
 		this.readGzip = new ReadGzip();
 		this.parser = new Parser();
 		this.posting = new Posting(priorityQueue);
-		this.writer = new Writer();
+		this.writer = new Writer(this.config.getOutputFilePath());
 	}
 	
 	public static void main(String args[]) throws InterruptedException

@@ -11,3 +11,4 @@
     - BreakIterator : http://docs.oracle.com/javase/6/docs/api/java/text/BreakIterator.html
     - SequenceGenerator - http://codereview.stackexchange.com/questions/54641/thread-safe-integer-sequence
 	- Guava - https://code.google.com/p/guava-libraries/wiki/NewCollectionTypesExplained#Multiset
+	- FileUtils - https://commons.apache.org/proper/commons-io/apidocs/org/apache/commons/io/FileUtils.html
