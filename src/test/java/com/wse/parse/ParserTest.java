@@ -10,6 +10,6 @@ public class ParserTest
 	public void testParseDoc()
 	{
 		File inputFile = new File("src/test/resources/test.html");
-		Parser parser = new Parser();
+		//Parser parser = new Parser();
 	}
 }

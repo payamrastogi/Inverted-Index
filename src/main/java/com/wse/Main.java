@@ -56,8 +56,8 @@ public class Main
 		
 		this.stopWords = this.fileReader.getStopWords();
 		this.readGzip = new ReadGzip();
-		this.parser = new Parser();
-		this.posting = new Posting(priorityQueue, this.stopWords);
+		this.parser = new Parser(this.stopWords);
+		this.posting = new Posting(priorityQueue);
 		this.writer = new Writer(this.config.getOutputFilePath());
 	}
 	
@@ -79,7 +79,6 @@ public class Main
 		executor.submit(new ThreadedReadGzip(readGzip, pathQueue, contentQueue));
 		for(int i=0;i<15;i++)
 			executor.submit(new ThreadedParser(parser, contentQueue, postingQueue));
-		executor.submit(new ThreadedPosting(posting, postingQueue));
 		executor.submit(new ThreadedPosting(posting, postingQueue));
 		for(int i=0;i<30;i++)
 			executor.submit(new ThreadedWriter(writer, priorityQueue));
