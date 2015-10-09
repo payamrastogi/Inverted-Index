@@ -1,5 +1,7 @@
 package com.wse;
 
+import java.io.File;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -20,32 +22,39 @@ import com.wse.parse.ThreadedParser;
 import com.wse.parse.ThreadedPosting;
 import com.wse.parse.ThreadedReadGzip;
 import com.wse.shell.Execute;
+import com.wse.util.Config;
 import com.wse.util.ElapsedTime;
+import com.wse.util.FileReader;
 import com.wse.util.Pair;
 
 public class Main
 {
-	private final static String getFilePaths = "find /Users/payamrastogi/NZ/data -regex .*/*_data -print";
-	
+	private static final String configPropPath = "/src/main/resources/config.properties";
 	private BlockingQueue<String> pathQueue;
 	private BlockingQueue<StringBuffer> contentQueue;
 	private BlockingQueue<Pair<Integer, Multiset<String>>> postingQueue;
 	private BlockingQueue<String> priorityQueue;
+	private Set<String> stopWords;
 	
+	private Config config;
 	private Parser parser;
 	private ReadGzip readGzip;
 	private Posting posting; 
 	private Writer writer;
+	private FileReader fileReader;
 	
 	private Logger logger = LoggerFactory.getLogger(Main.class);
 	
 	public Main()
 	{
+		this.config = new Config(new File(configPropPath));
 		this.pathQueue = new ArrayBlockingQueue<>(1000);
 		this.contentQueue = new ArrayBlockingQueue<>(1000);
 		this.postingQueue = new ArrayBlockingQueue<>(100000);
 		this.priorityQueue = new PriorityBlockingQueue<String>();
+		this.fileReader = new FileReader(this.config.getStopWordsFilePath());
 		
+		this.stopWords = this.fileReader.getStopWords();
 		this.readGzip = new ReadGzip();
 		this.parser = new Parser();
 		this.posting = new Posting(priorityQueue);
@@ -65,7 +74,7 @@ public class Main
 		ExecutorService executor = Executors.newCachedThreadPool();	
 		
 		Execute execute = new Execute(pathQueue);
-		execute.executeCommand(getFilePaths);
+		execute.executeCommand(this.config.getFindCommand());
 		System.out.println(pathQueue.size());
 		executor.submit(new ThreadedReadGzip(readGzip, pathQueue, contentQueue));
 		for(int i=0;i<15;i++)
