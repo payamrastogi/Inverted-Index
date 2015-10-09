@@ -18,10 +18,11 @@ public class Parser
 	{
 		ElapsedTime elapsedTime = new ElapsedTime();
 		Document document = Jsoup.parse(content.toString(), "UTF-8");
+		String filteredText = document.text().replaceAll("[^\\w\\s]"," ").replaceAll("\\d"," ").replaceAll("\\s+", " ");
 		Multiset<String>  set =  HashMultiset.create(Splitter.on(CharMatcher.WHITESPACE)
 			        						.trimResults(CharMatcher.is('.'))
 			        						.omitEmptyStrings()
-			        						.split(document.text()));
+			        						.split(filteredText));
 		logger.debug("Total Time: "+elapsedTime.getTotalTimeInSeconds()+" seconds");
 		return set;
 	}
