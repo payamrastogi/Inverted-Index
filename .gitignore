@@ -4,3 +4,4 @@
 *.ser
 /.settings/*
 /target/
+/output/*

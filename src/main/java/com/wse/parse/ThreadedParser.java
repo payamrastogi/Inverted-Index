@@ -3,12 +3,16 @@ package com.wse.parse;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.collect.Multiset;
 import com.wse.util.Pair;
 import com.wse.util.SequenceGenerator;
 
 public class ThreadedParser implements Runnable
 {
+	private final Logger logger = LoggerFactory.getLogger(ThreadedParser.class);
 	private BlockingQueue<StringBuffer> contentQueue;
 	private BlockingQueue<Pair<Integer, Multiset<String>>> postingQueue;
 	private Parser parser;
@@ -35,7 +39,7 @@ public class ThreadedParser implements Runnable
 			}
 			catch(InterruptedException e)
 			{
-				e.printStackTrace();
+				logger.error("InterruptedException: "+ e);
 			}
 		}
 	}

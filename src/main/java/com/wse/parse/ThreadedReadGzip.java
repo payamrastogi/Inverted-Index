@@ -4,13 +4,16 @@ import java.io.File;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ThreadedReadGzip implements Runnable
 {
 	private ReadGzip readGzip;
 	private BlockingQueue<String> pathQueue;
 	private BlockingQueue<StringBuffer> contentQueue;
 	
-	//private Logger logger = LoggerFactory.getLogger(ThreadedReadGzip.class);
+	private Logger logger = LoggerFactory.getLogger(ThreadedReadGzip.class);
 	
 	public ThreadedReadGzip(ReadGzip readGzip, BlockingQueue<String> pathQueue, BlockingQueue<StringBuffer> contentQueue)
 	{
@@ -33,7 +36,7 @@ public class ThreadedReadGzip implements Runnable
 			}
 			catch(InterruptedException e)
 			{
-				e.printStackTrace();
+				logger.error("InterruptedException: "+ e);
 			}
 		}
 	}
