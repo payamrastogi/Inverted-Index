@@ -10,6 +10,7 @@ public class Config
 {
 	private String findCommand;
 	private String stopWordsFilePath;
+	private String outputfilePath;
 	
 	public Config(File configFile) 
 	{
@@ -38,6 +39,7 @@ public class Config
 	{
 		this.findCommand = prop.getProperty("findCommand");
 		this.stopWordsFilePath = prop.getProperty("stopWordsFilePath");
+		this.outputfilePath=prop.getProperty("outputFilePath");
 	}
 	
 	private static Properties loadProperties(InputStream is) 
@@ -62,5 +64,10 @@ public class Config
 	public String getStopWordsFilePath()
 	{
 		return this.stopWordsFilePath;
+	}
+	
+	public String getOutputFilePath()
+	{
+		return this.outputfilePath;
 	}
 }
