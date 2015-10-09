@@ -25,7 +25,7 @@ import com.wse.util.Pair;
 
 public class Main
 {
-	private final static String getFilePaths = "find /Users/payamrastogi/NZ/data -regex .*/*_data -print";
+	private final static String getFilePaths = "find /home/jenil/Downloads/data -regex .*/*_data -print";
 	
 	private BlockingQueue<String> pathQueue;
 	private BlockingQueue<StringBuffer> contentQueue;
@@ -68,14 +68,14 @@ public class Main
 		execute.executeCommand(getFilePaths);
 		System.out.println(pathQueue.size());
 		executor.submit(new ThreadedReadGzip(readGzip, pathQueue, contentQueue));
-		for(int i=0;i<15;i++)
+		//for(int i=0;i<15;i++)
 			executor.submit(new ThreadedParser(parser, contentQueue, postingQueue));
 		executor.submit(new ThreadedPosting(posting, postingQueue));
 		//executor.submit(new ThreadedPosting(posting, postingQueue));
-		for(int i=0;i<30;i++)
+		//for(int i=0;i<30;i++)
 			executor.submit(new ThreadedWriter(writer, priorityQueue));
 		executor.shutdownNow();
-	    executor.awaitTermination(200, TimeUnit.SECONDS);
+	    executor.awaitTermination(600, TimeUnit.SECONDS);
 	    System.out.println(pathQueue.size());
 		System.out.println(postingQueue.size());
 		System.out.println(priorityQueue.size());
