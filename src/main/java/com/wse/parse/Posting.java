@@ -13,14 +13,12 @@ import com.wse.util.Pair;
 public class Posting 
 {
 	private BlockingQueue<String> priorityQueue;
-	private Set<String> stopWords;
 	
 	private final Logger logger = LoggerFactory.getLogger(Posting.class);
 	
-	public Posting(BlockingQueue<String> priorityQueue, Set<String> stopWords)
+	public Posting(BlockingQueue<String> priorityQueue)
 	{
 		this.priorityQueue = priorityQueue;
-		this.stopWords = stopWords;
 	}
 	
 	public void create(Pair<Integer, Multiset<String>> pair)
@@ -29,11 +27,8 @@ public class Posting
 		Multiset<String> set = pair.getRight();
 		for(String s: set.elementSet())
 		{
-			if(!stopWords.contains(s))
-			{
-				String temp = s+"\t"+pair.getLeft()+"\t"+set.count(s);
-				priorityQueue.add(temp);
-			}
+			String temp = s+"\t"+pair.getLeft()+"\t"+set.count(s);
+			priorityQueue.add(temp);
 		}
 		logger.debug("Total time: "+ elapsedTime.getTotalTimeInSeconds()+" seconds");
 	}
