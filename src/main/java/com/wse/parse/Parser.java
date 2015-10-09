@@ -18,7 +18,7 @@ public class Parser
 	{
 		ElapsedTime elapsedTime = new ElapsedTime();
 		Document document = Jsoup.parse(content.toString(), "UTF-8");
-		Multiset<String>  set =  HashMultiset.create(Splitter.on(CharMatcher.WHITESPACE)
+		Multiset<String> set =  HashMultiset.create(Splitter.on(CharMatcher.WHITESPACE)
 			        						.trimResults(CharMatcher.is('.'))
 			        						.omitEmptyStrings()
 			        						.split(document.text()));
