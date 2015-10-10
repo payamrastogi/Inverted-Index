@@ -11,15 +11,13 @@ public class ThreadedReadGzip implements Runnable
 {
 	private ReadGzip readGzip;
 	private BlockingQueue<String> pathQueue;
-	private BlockingQueue<StringBuffer> contentQueue;
 	
 	private Logger logger = LoggerFactory.getLogger(ThreadedReadGzip.class);
 	
-	public ThreadedReadGzip(ReadGzip readGzip, BlockingQueue<String> pathQueue, BlockingQueue<StringBuffer> contentQueue)
+	public ThreadedReadGzip(ReadGzip readGzip, BlockingQueue<String> pathQueue)
 	{
 		this.readGzip = readGzip;
 		this.pathQueue = pathQueue;
-		this.contentQueue = contentQueue;
 	}
 	
 	public void run()
@@ -31,7 +29,7 @@ public class ThreadedReadGzip implements Runnable
 				String path = null;
 				while((path = this.pathQueue.poll(1, TimeUnit.SECONDS))!=null)
 				{
-					this.contentQueue.add(readGzip.read(new File(path)));
+					readGzip.read(new File(path));
 				}
 			}
 			catch(InterruptedException e)
