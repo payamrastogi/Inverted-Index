@@ -78,16 +78,32 @@ public class Main
 	
 	public void execute() throws InterruptedException
 	{
+		try
+		{
 		ExecutorService executor = Executors.newCachedThreadPool();		
-		executor.submit(new ThreadedExecuteCommand(this.executeCommand));
+		this.executeCommand.execute();
+		logger.debug(this.pathQueue.size()+"");
+		int size = this.pathQueue.size();
+		for(int i=0;i<size;i++)
+		{
+			this.readGzip.read(new File(this.pathQueue.remove()));
+		}
+		//executor.submit(new ThreadedExecuteCommand(this.executeCommand));
 		//executor.submit(new ThreadedReadGzip(this.readGzip, this.pathQueue, this.readObjectQueue,this.cld));
-		executor.submit(new ThreadedReadGzip(this.readGzip, this.pathQueue, this.parsedObjectQueue,this.cld));
+		//executor.submit(new ThreadedReadGzip(this.readGzip, this.pathQueue, this.parsedObjectQueue,this.cld));
+		//executor.submit(new ThreadedReadGzip(this.readGzip, this.pathQueue, this.parsedObjectQueue,this.cld));
+		//executor.submit(new ThreadedReadGzip(this.readGzip, this.pathQueue, this.parsedObjectQueue,this.cld));
 		//executor.submit(new ThreadedReadObjectParser(this.readObjectParser, this.readObjectQueue, this.cld));
-		executor.submit(new ThreadedPosting(this.parsedObjectQueue));
-		executor.shutdownNow();
-	    executor.awaitTermination(600, TimeUnit.SECONDS);
+		//executor.submit(new ThreadedPosting(this.parsedObjectQueue));
+		//executor.shutdownNow();
+	    //executor.awaitTermination(600, TimeUnit.SECONDS);
 	    System.out.println(pathQueue.size());
 	    System.out.println(readObjectQueue.size());
 	    System.out.println(parsedObjectQueue.size());
+		}
+		catch(Exception e)
+		{
+			logger.error(e.getMessage(), e);
+		}
 	}
 }

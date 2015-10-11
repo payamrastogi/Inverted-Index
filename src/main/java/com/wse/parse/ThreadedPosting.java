@@ -28,11 +28,11 @@ public class ThreadedPosting implements Runnable
 			try
 			{
 				ParsedObject parsedObject = null;
-				while((parsedObject = parsedObjectQueue.poll(1, TimeUnit.SECONDS))!=null)
+				while((parsedObject = parsedObjectQueue.poll(10, TimeUnit.SECONDS))!=null)
 				{
 					count++;
-					if(count%10000 == 0)
-						logger.debug("Done: " +count+" in "+ elapsedTime.getTotalTimeInSeconds() + " seconds");
+					if(count%100000 == 0)
+						logger.debug(parsedObject + " Done: " +count+" in "+ elapsedTime.getTotalTimeInSeconds() + " seconds");
 				}
 			}
 			catch(InterruptedException e)

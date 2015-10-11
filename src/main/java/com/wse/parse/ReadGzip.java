@@ -24,6 +24,7 @@ public class ReadGzip
 	private Logger logger = LoggerFactory.getLogger(ReadGzip.class);
 	private BlockingQueue<ParsedObject> parsedObjectQueue;
 	private int size;
+	private int count=0;
 	
 	public ReadGzip(BlockingQueue<ParsedObject> parsedObjectQueue)
 	{
@@ -46,7 +47,7 @@ public class ReadGzip
 				String line;
 				try(FileInputStream fisData = new FileInputStream(dataFile))
 				{
-					try(GZIPInputStream gzisData = new GZIPInputStream(fisData))
+					try(GZIPInputStream gzisData = new GZIPInputStream(fisData, (int)dataFile.length()))
 					{
 						while((line=br.readLine())!=null)
 						{
@@ -56,10 +57,21 @@ public class ReadGzip
 							int volumeId = Integer.parseInt(fileName)/100;
 							int documentId = SequenceGenerator.getNextInSequence(ReadGzip.class);
 							StringBuilder sb = new StringBuilder();
-							Parser.parseDoc("www.google.com", new String(bytes), sb);
+							//System.out.println(new String(bytes));
+							//System.out.println("-------------------------");
+							try
+							{
+								Parser.parseDoc("www.google.com", new String(bytes), sb);
+							}
+							catch(Exception e)
+							{
+								logger.error(e.getMessage(), e);
+							}
 							//ReadObject readObject = new ReadObject(volumeId, bytes, documentId);
 							ParsedObject parsedObject = new ParsedObject(volumeId, documentId, sb);
-							parsedObjectQueue.add(parsedObject);
+							//parsedObjectQueue.add(parsedObject);
+							if(++count%10000==0)
+								logger.debug(count+" Total Time: "+elapsedTime.getTotalTimeInSeconds()+" seconds");
 						}
 					}
 				}		
@@ -67,7 +79,11 @@ public class ReadGzip
 		} 
 		catch (IOException e) 
 		{
-			logger.error("Error", e);
+			logger.error(e.getMessage(), e);
+		}
+		catch(Exception e)
+		{
+			logger.error(e.getMessage(), e);
 		}
 	}
 }	

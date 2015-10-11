@@ -38,7 +38,7 @@ public class ThreadedReadGzip implements Runnable
 			try
 			{
 				String path = null;
-				while((path = this.pathQueue.poll(1, TimeUnit.SECONDS))!=null)
+				while((path = this.pathQueue.poll(10, TimeUnit.SECONDS))!=null)
 				{
 					readGzip.read(new File(path));
 					count++;
