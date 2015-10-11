@@ -13,7 +13,7 @@ import edu.poly.cs912.Parser;
 
 public class ReadObjectParser 
 {	
-	private final Logger logger = LoggerFactory.getLogger(Parser.class);
+	//private final Logger logger = LoggerFactory.getLogger(ReadObjectParser.class);
 	private BlockingQueue<ParsedObject> parsedObjectQueue;
 	
 	public ReadObjectParser(BlockingQueue<ParsedObject> parsedObjectQueue)
@@ -23,10 +23,13 @@ public class ReadObjectParser
 	
 	public void parseText(ReadObject readObject)
 	{
-		ElapsedTime elapsedTime = new ElapsedTime();
-		StringBuilder sb = new StringBuilder();
-		Parser.parseDoc("www.google.com", new String(readObject.getContent()), sb);
-		parsedObjectQueue.add(new ParsedObject(readObject.getVolumeId(), readObject.getDocumentId(), sb));
-		logger.debug("Total Time: "+elapsedTime.getTotalTimeInSeconds()+" seconds");
+		//ElapsedTime elapsedTime = new ElapsedTime();
+		StringBuilder sb = new StringBuilder(new String(readObject.getContent()));
+		//Parser.parseDoc("www.google.com", new String(readObject.getContent()), sb);
+		int volumeId = readObject.getVolumeId();
+		int documentId = readObject.getDocumentId();
+		parsedObjectQueue.add(new ParsedObject(volumeId, documentId, sb));
+		readObject = null;
+		//logger.debug("Total Time: "+elapsedTime.getTotalTimeInSeconds()+" seconds");
 	}
 }

@@ -60,7 +60,7 @@ public class ReadGzip
 		{
 			logger.error("Error", e);
 		}
-		logger.debug("Total Time: "+ elapsedTime.getTotalTimeInSeconds() + " seconds");
+		//logger.debug("Total Time: "+ elapsedTime.getTotalTimeInSeconds() + " seconds");
 	}
 }	
 

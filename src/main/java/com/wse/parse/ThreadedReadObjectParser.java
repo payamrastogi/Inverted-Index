@@ -22,14 +22,18 @@ public class ThreadedReadObjectParser implements Runnable
 	
 	public void run()
 	{
-		for(int i=0;i<5;i++)
+		int count = 0;
+		for(int i=0;i<10;i++)
 		{
 			try
 			{
 				ReadObject readObject = null;
 				while((readObject=this.readObjectQueue.poll(1, TimeUnit.SECONDS))!=null)
 				{
+					count++;
 					readObjectParser.parseText(readObject);
+					if(count%10000==0)
+						logger.debug("Done: "+count);
 				}
 			}
 			catch(InterruptedException e)

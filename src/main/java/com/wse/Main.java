@@ -18,6 +18,7 @@ import com.wse.model.ReadObject;
 import com.wse.parse.Posting;
 import com.wse.parse.ReadGzip;
 import com.wse.parse.ReadObjectParser;
+import com.wse.parse.ThreadedPosting;
 import com.wse.parse.ThreadedReadGzip;
 import com.wse.parse.ThreadedReadObjectParser;
 import com.wse.shell.ExecuteCommand;
@@ -40,7 +41,6 @@ public class Main
 	private Config config;
 	private ExecuteCommand executeCommand;
 	private ReadObjectParser readObjectParser;
-	private ParsedObject parsedObject;
 	private ReadGzip readGzip;
 	private Posting posting; 
 	private Writer writer;
@@ -52,10 +52,8 @@ public class Main
 	{
 		this.config = new Config(new File(configPropPath));
 		this.pathQueue = new ArrayBlockingQueue<>(5000);
-		this.readObjectQueue = new ArrayBlockingQueue<>(10000);
-		this.parsedObjectQueue = new ArrayBlockingQueue<>(10000);
-		this.postingQueue = new ArrayBlockingQueue<>(100000000);
-		this.priorityQueue = new ArrayBlockingQueue<String>(10000000);
+		this.readObjectQueue = new ArrayBlockingQueue<>(100000);
+		this.parsedObjectQueue = new ArrayBlockingQueue<>(100000);
 		this.fileReader = new FileReader(this.config.getStopWordsFilePath());
 		
 		this.stopWords = this.fileReader.getStopWords();
@@ -77,11 +75,15 @@ public class Main
 	public void execute() throws InterruptedException
 	{
 		ExecutorService executor = Executors.newCachedThreadPool();		
+		//this.executeCommand.execute();
 		executor.submit(new ThreadedExecuteCommand(this.executeCommand));
 		executor.submit(new ThreadedReadGzip(this.readGzip, this.pathQueue));
 		executor.submit(new ThreadedReadObjectParser(this.readObjectParser, this.readObjectQueue));
+		executor.submit(new ThreadedPosting(this.parsedObjectQueue));
 		executor.shutdownNow();
 	    executor.awaitTermination(600, TimeUnit.SECONDS);
 	    System.out.println(pathQueue.size());
+	    System.out.println(readObjectQueue.size());
+	    System.out.println(parsedObjectQueue.size());
 	}
 }

@@ -31,13 +31,11 @@ public class ExecuteCommand
 		{
 			process = Runtime.getRuntime().exec(this.command);
 			//process.waitFor();
-			//process.
 			try(BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream())))
 			{
 				String line = "";
 				while ((line = reader.readLine())!= null) 
 				{
-					System.out.println(line);
 					this.pathQueue.add(line);
 				}
 			}
@@ -46,10 +44,6 @@ public class ExecuteCommand
 		{
 			logger.error(e.getMessage(), e);
 		}
-		//catch(InterruptedException e)
-		//{
-		//	logger.error(e.getMessage(), e);
-		//}
 		logger.debug("Total Time: "+elapsedTime.getTotalTimeInSeconds()+" seconds");
 	}
 }
