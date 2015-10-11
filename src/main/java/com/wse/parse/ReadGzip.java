@@ -26,7 +26,7 @@ public class ReadGzip
 		this.readObjectQueue = readObjectQueue;
 	}
 	
-	public void read(File file)
+	public void read(File file) throws InterruptedException
 	{
 		ElapsedTime elapsedTime = new ElapsedTime();
 		try(FileInputStream fis = new FileInputStream(file)) 

@@ -18,7 +18,6 @@ public class ThreadedPosting implements Runnable
 	
 	public ThreadedPosting(BlockingQueue<ParsedObject> parsedObjectQueue)
 	{
-
 		this.parsedObjectQueue = parsedObjectQueue;
 	}
 	
@@ -26,7 +25,7 @@ public class ThreadedPosting implements Runnable
 	{
 		ElapsedTime elapsedTime = new ElapsedTime();
 		int count = 0;
-		for(int i=0;i<50;i++)
+		for(int i=0;i<20;i++)
 		{
 			try
 			{
@@ -34,7 +33,7 @@ public class ThreadedPosting implements Runnable
 				while((parsedObject = parsedObjectQueue.poll(1, TimeUnit.SECONDS))!=null)
 				{
 					count++;
-					if(count%1000000 == 0);
+					if(count%10000 == 0)
 						logger.debug("Done: " +count+" in "+ elapsedTime.getTotalTimeInSeconds() + " seconds");
 				}
 			}

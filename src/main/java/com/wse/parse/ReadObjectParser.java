@@ -21,11 +21,11 @@ public class ReadObjectParser
 		this.parsedObjectQueue = parsedObjectQueue;
 	}
 	
-	public void parseText(ReadObject readObject)
+	public void parseText(ReadObject readObject) throws InterruptedException
 	{
 		//ElapsedTime elapsedTime = new ElapsedTime();
-		StringBuilder sb = new StringBuilder(new String(readObject.getContent()));
-		//Parser.parseDoc("www.google.com", new String(readObject.getContent()), sb);
+		StringBuilder sb = new StringBuilder();
+		Parser.parseDoc("www.google.com", new String(readObject.getContent()), sb);
 		int volumeId = readObject.getVolumeId();
 		int documentId = readObject.getDocumentId();
 		parsedObjectQueue.add(new ParsedObject(volumeId, documentId, sb));

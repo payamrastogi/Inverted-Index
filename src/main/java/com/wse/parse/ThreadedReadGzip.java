@@ -13,7 +13,6 @@ public class ThreadedReadGzip implements Runnable
 {
 	private ReadGzip readGzip;
 	private BlockingQueue<String> pathQueue;
-	
 	private Logger logger = LoggerFactory.getLogger(ThreadedReadGzip.class);
 	
 	public ThreadedReadGzip(ReadGzip readGzip, BlockingQueue<String> pathQueue)
@@ -35,9 +34,8 @@ public class ThreadedReadGzip implements Runnable
 				{
 					readGzip.read(new File(path));
 					count++;
-					if(count%10==0)
+					if(count%5==0)
 					{
-						//this.wait(5000);
 						logger.debug("Done: "+ count+ " in " + elapsedTime.getTotalTimeInSeconds() + " seconds");
 					}
 				}

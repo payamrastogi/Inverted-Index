@@ -32,7 +32,7 @@ public class ThreadedReadObjectParser implements Runnable
 				{
 					count++;
 					readObjectParser.parseText(readObject);
-					if(count%10000==0)
+					if(count%1000==0)
 						logger.debug("Done: "+count);
 				}
 			}

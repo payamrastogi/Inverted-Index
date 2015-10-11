@@ -36,7 +36,7 @@ public class ExecuteCommand
 				String line = "";
 				while ((line = reader.readLine())!= null) 
 				{
-					this.pathQueue.add(line);
+					this.pathQueue.add(line);;
 				}
 			}
 		} 
