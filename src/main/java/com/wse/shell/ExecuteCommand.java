@@ -10,42 +10,46 @@ import org.slf4j.LoggerFactory;
 
 import com.wse.util.ElapsedTime;
 
-public class Execute 
+public class ExecuteCommand 
 {
+	private String command;
 	private BlockingQueue<String> pathQueue;
-	private Logger logger = LoggerFactory.getLogger(Execute.class);
+	private Logger logger = LoggerFactory.getLogger(ExecuteCommand.class);
 	
-	public Execute(BlockingQueue<String> pathQueue)
+	public ExecuteCommand(String command, BlockingQueue<String> pathQueue)
 	{
+		this.command = command;
 		this.pathQueue = pathQueue;
 	}
 	
-	public void executeCommand(String command) 
+	public void execute() 
 	{
 		ElapsedTime elapsedTime = new ElapsedTime();
 		logger.debug("executeCommand");
 		Process process;
 		try 
 		{
-			process = Runtime.getRuntime().exec(command);
-			process.waitFor();
+			process = Runtime.getRuntime().exec(this.command);
+			//process.waitFor();
+			//process.
 			try(BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream())))
 			{
 				String line = "";
 				while ((line = reader.readLine())!= null) 
 				{
-					pathQueue.add(line);
+					System.out.println(line);
+					this.pathQueue.add(line);
 				}
 			}
 		} 
 		catch (IOException e)
 		{
-			logger.error(e.getMessage());
+			logger.error(e.getMessage(), e);
 		}
-		catch(InterruptedException e)
-		{
-			logger.error(e.getMessage());
-		}
+		//catch(InterruptedException e)
+		//{
+		//	logger.error(e.getMessage(), e);
+		//}
 		logger.debug("Total Time: "+elapsedTime.getTotalTimeInSeconds()+" seconds");
 	}
 }

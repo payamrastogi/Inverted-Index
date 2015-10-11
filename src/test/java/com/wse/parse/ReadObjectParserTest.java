@@ -29,6 +29,8 @@ public class ReadObjectParserTest
 		{
 			readObjectParser.parseText(readObject);
 		}
+		ParsedObject parsedObject = parsedObjectQueue.poll();
+		System.out.println(parsedObject.getParsedContent().toString());
 		//System.out.println(parsedObjectQueue);
 		logger.debug("Total Time: "+elapsedTime.getTotalTimeInSeconds()+" seconds");
 	}

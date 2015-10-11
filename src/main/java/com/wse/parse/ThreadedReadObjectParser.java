@@ -12,11 +12,11 @@ public class ThreadedReadObjectParser implements Runnable
 {
 	private final Logger logger = LoggerFactory.getLogger(ThreadedReadObjectParser.class);
 	private BlockingQueue<ReadObject> readObjectQueue;
-	private ReadObjectParser parser;
+	private ReadObjectParser readObjectParser;
 		
 	public ThreadedReadObjectParser(ReadObjectParser parser, BlockingQueue<ReadObject> readObjectQueue)
 	{
-		this.parser = parser;
+		this.readObjectParser = parser;
 		this.readObjectQueue = readObjectQueue;
 	}
 	
@@ -29,7 +29,7 @@ public class ThreadedReadObjectParser implements Runnable
 				ReadObject readObject = null;
 				while((readObject=this.readObjectQueue.poll(1, TimeUnit.SECONDS))!=null)
 				{
-					parser.parseText(readObject);
+					readObjectParser.parseText(readObject);
 				}
 			}
 			catch(InterruptedException e)
