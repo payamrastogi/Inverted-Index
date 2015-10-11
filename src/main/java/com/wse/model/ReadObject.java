@@ -28,4 +28,9 @@ public class ReadObject
 		return this.documentId;
 	}
 	
+	public String toString()
+	{
+		return this.volumeId +" : "+this.documentId+" : "+ new String(this.content).length();
+	}
+	
 }

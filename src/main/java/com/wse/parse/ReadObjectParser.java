@@ -1,5 +1,7 @@
 package com.wse.parse;
 
+import java.io.IOException;
+import java.io.PipedInputStream;
 import java.util.concurrent.BlockingQueue;
 
 import org.slf4j.Logger;
@@ -21,13 +23,13 @@ public class ReadObjectParser
 		this.parsedObjectQueue = parsedObjectQueue;
 	}
 	
-	public void parseText(ReadObject readObject) throws InterruptedException
+	public void parseText(ReadObject readObject) throws InterruptedException, IOException
 	{
-		//ElapsedTime elapsedTime = new ElapsedTime();
-		StringBuilder sb = new StringBuilder();
-		Parser.parseDoc("www.google.com", new String(readObject.getContent()), sb);
 		int volumeId = readObject.getVolumeId();
 		int documentId = readObject.getDocumentId();
+		byte[] bytes = readObject.getContent();
+		StringBuilder sb = new StringBuilder();
+		Parser.parseDoc("www.google.com", new String(bytes), sb);
 		parsedObjectQueue.add(new ParsedObject(volumeId, documentId, sb));
 		readObject = null;
 		//logger.debug("Total Time: "+elapsedTime.getTotalTimeInSeconds()+" seconds");

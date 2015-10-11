@@ -1,9 +1,13 @@
 package com.wse;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +30,7 @@ import com.wse.shell.ThreadedExecuteCommand;
 import com.wse.util.Config;
 import com.wse.util.ElapsedTime;
 import com.wse.util.FileReader;
-import com.wse.util.Pair;
+//import com.wse.util.Pair;
 
 public class Main
 {
@@ -34,37 +38,37 @@ public class Main
 	private BlockingQueue<String> pathQueue;
 	private BlockingQueue<ReadObject> readObjectQueue;
 	private BlockingQueue<ParsedObject> parsedObjectQueue;
-	private BlockingQueue<Pair<Integer, Multiset<String>>> postingQueue;
 	private BlockingQueue<String> priorityQueue;
-	private Set<String> stopWords;
+	//private Set<String> stopWords;
 	
 	private Config config;
 	private ExecuteCommand executeCommand;
 	private ReadObjectParser readObjectParser;
 	private ReadGzip readGzip;
-	private Posting posting; 
-	private Writer writer;
-	private FileReader fileReader;
+	//private Posting posting; 
+	//private Writer writer;
+	//private FileReader fileReader;
+	private CountDownLatch cld;
 	
 	private Logger logger = LoggerFactory.getLogger(Main.class);
 	
-	public Main()
+	public Main() throws IOException
 	{
 		this.config = new Config(new File(configPropPath));
 		this.pathQueue = new ArrayBlockingQueue<>(5000);
 		this.readObjectQueue = new ArrayBlockingQueue<>(100000);
 		this.parsedObjectQueue = new ArrayBlockingQueue<>(100000);
-		this.fileReader = new FileReader(this.config.getStopWordsFilePath());
-		
-		this.stopWords = this.fileReader.getStopWords();
+		//this.fileReader = new FileReader(this.config.getStopWordsFilePath());
+		//this.stopWords = this.fileReader.getStopWords();
 		this.executeCommand = new ExecuteCommand(this.config.getFindCommand(), pathQueue);
-		this.readGzip = new ReadGzip(this.readObjectQueue);
+		this.readGzip = new ReadGzip(this.parsedObjectQueue);
 		this.readObjectParser = new ReadObjectParser(parsedObjectQueue);
-		this.posting = new Posting(priorityQueue);
-		this.writer = new Writer(this.config.getOutputFilePath());
+		//this.posting = new Posting(priorityQueue);
+		//this.writer = new Writer(this.config.getOutputFilePath());
+		this.cld = new CountDownLatch(1);
 	}
 	
-	public static void main(String args[]) throws InterruptedException
+	public static void main(String args[]) throws InterruptedException, IOException
 	{
 		ElapsedTime elapsedTime = new ElapsedTime();
 		Main main = new Main();
@@ -75,10 +79,10 @@ public class Main
 	public void execute() throws InterruptedException
 	{
 		ExecutorService executor = Executors.newCachedThreadPool();		
-		//this.executeCommand.execute();
 		executor.submit(new ThreadedExecuteCommand(this.executeCommand));
-		executor.submit(new ThreadedReadGzip(this.readGzip, this.pathQueue));
-		executor.submit(new ThreadedReadObjectParser(this.readObjectParser, this.readObjectQueue));
+		//executor.submit(new ThreadedReadGzip(this.readGzip, this.pathQueue, this.readObjectQueue,this.cld));
+		executor.submit(new ThreadedReadGzip(this.readGzip, this.pathQueue, this.parsedObjectQueue,this.cld));
+		//executor.submit(new ThreadedReadObjectParser(this.readObjectParser, this.readObjectQueue, this.cld));
 		executor.submit(new ThreadedPosting(this.parsedObjectQueue));
 		executor.shutdownNow();
 	    executor.awaitTermination(600, TimeUnit.SECONDS);

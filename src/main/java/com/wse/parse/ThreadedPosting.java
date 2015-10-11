@@ -6,10 +6,8 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Multiset;
 import com.wse.model.ParsedObject;
 import com.wse.util.ElapsedTime;
-import com.wse.util.Pair;
 
 public class ThreadedPosting implements Runnable
 {

@@ -5,25 +5,29 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PipedOutputStream;
 import java.util.concurrent.BlockingQueue;
 import java.util.zip.GZIPInputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.wse.model.ParsedObject;
 import com.wse.model.ReadObject;
 import com.wse.util.ElapsedTime;
 import com.wse.util.SequenceGenerator;
 
+import edu.poly.cs912.Parser;
+
 public class ReadGzip 
 {	
 	private Logger logger = LoggerFactory.getLogger(ReadGzip.class);
-	private BlockingQueue<ReadObject> readObjectQueue;
+	private BlockingQueue<ParsedObject> parsedObjectQueue;
 	private int size;
 	
-	public ReadGzip(BlockingQueue<ReadObject> readObjectQueue)
+	public ReadGzip(BlockingQueue<ParsedObject> parsedObjectQueue)
 	{
-		this.readObjectQueue = readObjectQueue;
+		this.parsedObjectQueue = parsedObjectQueue;
 	}
 	
 	public void read(File file) throws InterruptedException
@@ -42,15 +46,20 @@ public class ReadGzip
 				String line;
 				try(FileInputStream fisData = new FileInputStream(dataFile))
 				{
-					try(GZIPInputStream gzisData = new GZIPInputStream(fisData, (int)dataFile.length()))
+					try(GZIPInputStream gzisData = new GZIPInputStream(fisData))
 					{
 						while((line=br.readLine())!=null)
 						{
 							this.size = Integer.parseInt(line.split("\\s")[3]);
 							byte[] bytes = new byte[this.size];
 							gzisData.read(bytes);
-							ReadObject readObject = new ReadObject(Integer.parseInt(fileName)/100, bytes, SequenceGenerator.getNextInSequence(ReadGzip.class));
-							readObjectQueue.add(readObject);
+							int volumeId = Integer.parseInt(fileName)/100;
+							int documentId = SequenceGenerator.getNextInSequence(ReadGzip.class);
+							StringBuilder sb = new StringBuilder();
+							Parser.parseDoc("www.google.com", new String(bytes), sb);
+							//ReadObject readObject = new ReadObject(volumeId, bytes, documentId);
+							ParsedObject parsedObject = new ParsedObject(volumeId, documentId, sb);
+							parsedObjectQueue.add(parsedObject);
 						}
 					}
 				}		
@@ -60,7 +69,6 @@ public class ReadGzip
 		{
 			logger.error("Error", e);
 		}
-		//logger.debug("Total Time: "+ elapsedTime.getTotalTimeInSeconds() + " seconds");
 	}
 }	
 

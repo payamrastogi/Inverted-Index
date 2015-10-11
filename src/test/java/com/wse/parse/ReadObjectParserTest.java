@@ -15,7 +15,7 @@ import com.wse.util.ElapsedTime;
 public class ReadObjectParserTest 
 {
 	@Test
-	public void testParseText()
+	public void testParseText() throws InterruptedException
 	{
 		Logger logger = LoggerFactory.getLogger(ReadObjectParserTest.class);
 		ElapsedTime elapsedTime = new ElapsedTime();
