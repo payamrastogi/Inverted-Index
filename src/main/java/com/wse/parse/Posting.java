@@ -1,6 +1,5 @@
 package com.wse.parse;
 
-import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
 import org.slf4j.Logger;

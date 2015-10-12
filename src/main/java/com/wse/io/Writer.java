@@ -4,6 +4,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
@@ -14,32 +16,40 @@ import com.wse.util.SequenceGenerator;
 public class Writer 
 {
 	private final Logger logger = LoggerFactory.getLogger(Writer.class);
-	private File outputFile;
+	private final Map<Integer, BufferedWriter> writers;
 	private String filePath;
-	private final static int MAX_SIZE = 1024*1024*1024;
-	private AtomicInteger currentSize = new AtomicInteger(0);
+	private int count;
 	
 	public Writer(String filePath)
 	{
 		this.filePath = filePath;
-		this.outputFile = new File(filePath, ""+SequenceGenerator.getNextInSequence(Writer.class));
+		this.writers = new HashMap<>();
 	}
 	
-	public void write(String text)
+	public void write(WriteObject writeObject) throws IOException
 	{
-		if (currentSize.get() >= MAX_SIZE) {
-			currentSize = new AtomicInteger(0);
-			this.outputFile = new File(filePath, ""+SequenceGenerator.getNextInSequence(Writer.class));
-		}
-		try(BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true)))
+		if(!this.writers.containsKey(writeObject.getVolumeId()))
 		{
-			currentSize.addAndGet(text.length());
-			bw.write(text+"\n");
+			this.writers(writeObject.getVolumeId(), new BufferedWriter(new FileWriter(new File(filePath, writeObject.getVolumeId()))));
 		}
-		catch(IOException e)
+		BufferedWriter writer = this.writers.get(writeObject.getVolumeId());
+		if (writer == null) 
 		{
-			logger.error("IOException", e);
-		}	
+	          throw new RuntimeException("No writer for volume: " + writeObject.getVolumeId());
+	    }
+		try 
+		{
+			writer.write(writeObject.getPosting());
+	        count++;
+	        if (count % 10000 == 0)
+	        {
+	            logger.info("Done: " + count);
+	        }
+	    } 
+		catch (Exception e) 
+		{
+	          logger.error("Exception in writer: " + e.getMessage(), e);
+	    }
 	}
 	
 }
