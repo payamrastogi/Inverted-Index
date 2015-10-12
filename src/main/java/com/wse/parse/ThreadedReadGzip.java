@@ -37,7 +37,7 @@ public class ThreadedReadGzip implements Runnable
 				{
 					readGzip.read(new File(path));
 					count++;
-					if(count%10==0)
+					if(count%25000==0)
 					{
 						logger.debug("Done: "+ count+ " Total Time: " + elapsedTime.getTotalTimeInSeconds() + " seconds");
 						logger.debug("pathQueue: "+pathQueue.size());

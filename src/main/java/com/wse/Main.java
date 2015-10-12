@@ -35,7 +35,8 @@ public class Main
 	private BlockingQueue<String> pathQueue;
 	private BlockingQueue<ParsedObject> parsedObjectQueue;
 	private BlockingQueue<String> sortFileQueue;
-	private BlockingQueue<String> mergeFileQueue;
+	private BlockingQueue<String> mergeFileQueue1;
+	private BlockingQueue<String> mergeFileQueue2;
 	
 	private Set<String> stopWords;
 	
@@ -58,12 +59,13 @@ public class Main
 		this.pathQueue = new ArrayBlockingQueue<>(5000);
 		this.parsedObjectQueue = new ArrayBlockingQueue<>(100000);
 		this.sortFileQueue = new ArrayBlockingQueue<>(200);
-		this.mergeFileQueue = new ArrayBlockingQueue<>(200);
+		this.mergeFileQueue1 = new ArrayBlockingQueue<>(200);
+		this.mergeFileQueue2 = new ArrayBlockingQueue<>(200);
 		
 		this.executeCommand = new ExecuteCommand(this.config.getFindCommand(), pathQueue);
 		this.readGzip = new ReadGzip(this.parsedObjectQueue);
-		this.unixSort = new UnixSort(this.config.getSortCommand(), this.mergeFileQueue);
-		this.unixMerge = new UnixMerge(this.config.getMergeCommand());
+		this.unixSort = new UnixSort(this.config.getSortCommand(), this.mergeFileQueue1, this.mergeFileQueue2);
+		this.unixMerge = new UnixMerge(this.config.getMergeCommand(), this.config.getOutputFilePath());
 		char ch = 'a' ;
 		for (int i =0 ;i<5 ;i++) 
 			this.writers[i] = new Writer(this.config.getOutputFilePath(),ch++, this.stopWords, this.sortFileQueue);
@@ -87,13 +89,14 @@ public class Main
 			for (int i =0 ;i<5 ;i++)
 				executor.submit(new ThreadedWriter(this.writers[i], this.parsedObjectQueue));
 			executor.submit(new ThreadedUnixSort(this.unixSort, this.sortFileQueue));
-			executor.submit(new ThreadedUnixMerge(this.unixMerge, this.mergeFileQueue));
+			executor.submit(new ThreadedUnixMerge(this.unixMerge, this.mergeFileQueue1, this.mergeFileQueue2));
 			executor.shutdownNow();
 		    executor.awaitTermination(10000, TimeUnit.SECONDS);
 			logger.debug(pathQueue.size()+"");
 			logger.debug(parsedObjectQueue.size()+"");
 			logger.debug(sortFileQueue.size()+"");
-			logger.debug(mergeFileQueue.size()+"");
+			logger.debug(mergeFileQueue1.size()+"");
+			logger.debug(mergeFileQueue2.size()+"");
 		}
 		catch(Exception e)
 		{
