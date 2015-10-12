@@ -2,24 +2,24 @@ package com.wse.io;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.wse.model.ParsedObject;
 import com.wse.util.ElapsedTime;
 
 public class ThreadedWriter implements Runnable
 {
 	private final Logger logger = LoggerFactory.getLogger(ThreadedWriter.class);
-	private BlockingQueue<String> priorityQueue;
-	private AtomicInteger count = new AtomicInteger(1);
+	private BlockingQueue<ParsedObject> parsedObjectQueue;
+	private int count=0;
 	private Writer writer;
 	
-	public ThreadedWriter(Writer writer, BlockingQueue<String> priorityQueue)
+	public ThreadedWriter(Writer writer, BlockingQueue<ParsedObject> parsedObjectQueue)
 	{
 		this.writer = writer;
-		this.priorityQueue = priorityQueue;
+		this.parsedObjectQueue = parsedObjectQueue;
 	}
 	
 	public void run()
@@ -29,13 +29,16 @@ public class ThreadedWriter implements Runnable
 		{
 			try
 			{
-				String text = null;
-				while((text=priorityQueue.poll(1, TimeUnit.SECONDS))!=null)
+				ParsedObject parsedObject = null;
+				while((parsedObject=parsedObjectQueue.poll(10, TimeUnit.SECONDS))!=null)
 				{
-					writer.write(text);
-					count.getAndIncrement();
-					if(count.get()%10000==0)
-						logger.debug("Tota Time: "+ elapsedTime.getTotalTimeInSeconds()+" seconds");
+					writer.write(parsedObject);
+					if (++count % 25000 ==0) 
+					{
+						logger.debug(" Tota Time: "+ elapsedTime.getTotalTimeInSeconds()+" seconds");
+						logger.debug("parsedObjectQueue: "+parsedObjectQueue.size());
+						count = 0;
+					}
 				}
 			}
 			catch(InterruptedException e)
