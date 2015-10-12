@@ -40,12 +40,12 @@ public class Writer
 			for (String wordContent : wordContents) 
 			{
 				String word = wordContent.split(" ")[0];
-				if (word== null || word.trim().isEmpty() || word.matches(".*\\d+.*") || word.matches("((\\w)\\2\\2)+") ||stopWords.contains(word))
+				if (word== null || word.trim().isEmpty() || word.matches(".*\\d+.*") ||stopWords.contains(word))
 					continue;
-				BufferedWriter writer = this.writers.get(parsedObject.getVolumeId());
+				BufferedWriter writer = this.writers.get(volumeId);
 				if (writer == null) 
 				{
-			          throw new RuntimeException("No writer for volume: " + parsedObject.getVolumeId());
+			          throw new RuntimeException("No writer for volume: " + volumeId);
 			    }
 				writer.write(word+"\t"+documentId);
 			}

@@ -34,7 +34,7 @@ public class ThreadedWriter implements Runnable
 				while((parsedObject=parsedObjectQueue.poll(10, TimeUnit.SECONDS))!=null)
 				{
 					writer.write(parsedObject);
-					logger.debug(" Tota Time: "+ elapsedTime.getTotalTimeInSeconds()+" seconds");
+					logger.debug(" Tota Time: "+ elapsedTime.getTotalTimeInSeconds()+" seconds "+parsedObject.getVolumeId());
 					logger.debug("parsedObjectQueue: "+parsedObjectQueue.size());
 				}
 			}

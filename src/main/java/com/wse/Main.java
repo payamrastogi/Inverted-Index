@@ -81,10 +81,10 @@ public class Main
 			executor.submit(new ThreadedWriter(this.writer, this.parsedObjectQueue));
 			executor.submit(new ThreadedWriter(this.writer, this.parsedObjectQueue));
 			executor.submit(new ThreadedWriter(this.writer, this.parsedObjectQueue));
+			executor.submit(new ThreadedWriter(this.writer, this.parsedObjectQueue));
 			executor.shutdownNow();
 		    executor.awaitTermination(10000, TimeUnit.SECONDS);
 			logger.debug(pathQueue.size()+"");
-			logger.debug(readObjectQueue.size()+"");
 			logger.debug(parsedObjectQueue.size()+"");
 		}
 		catch(Exception e)
