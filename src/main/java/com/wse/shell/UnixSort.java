@@ -22,7 +22,7 @@ public class UnixSort
 	public void sortFile(String filePath)
 	{
 		ElapsedTime elapsedTime = new ElapsedTime();
-		logger.debug("executeCommand"+this.sortCommand+ filePath+ " > "+filePath+"_sorted");
+		logger.debug("execute: "+this.sortCommand+ filePath+ " > "+filePath+"_sorted");
 		try 
 		{
 			Process p  = new ProcessBuilder("/bin/bash", "-c",this.sortCommand+ filePath+ " -o "+filePath+"_sorted").start();
