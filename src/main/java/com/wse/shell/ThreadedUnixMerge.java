@@ -26,12 +26,11 @@ public class ThreadedUnixMerge implements Runnable
 			try
 			{
 				String filePath1 = null;
-				while((filePath1 = toMergeQueue.poll(25, TimeUnit.SECONDS))!=null)
+				String filePath2 = null;
+				while((filePath1 = toMergeQueue.poll(25, TimeUnit.SECONDS))!=null && (filePath2 = toMergeQueue.poll(25, TimeUnit.SECONDS))!=null)
 				{
 					String outputPath = new File(filePath1).getParent();
-					String filePath2 = null;
-					while((filePath2 = toMergeQueue.poll(25, TimeUnit.SECONDS))!=null)
-						toMergeQueue.add(this.unixMerge.mergeFiles(filePath1, filePath2, outputPath));
+					toMergeQueue.add(this.unixMerge.mergeFiles(filePath1, filePath2, outputPath));
 				}
 			}
 			catch(InterruptedException e)
