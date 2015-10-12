@@ -39,17 +39,17 @@ public class Writer
 			for (String wordContent : wordContents) 
 			{
 				String word = wordContent.split(" ")[0];
-				if (word== null || word.trim().isEmpty() || word.matches(".*\\d+.*") || word.matches("((\\w)\\2\\2)+") ||stopWords.contains(word))
+				if (word== null || word.trim().isEmpty() || word.matches(".*\\d+.*") ||stopWords.contains(word))
 					continue;
 				this.writer.write(word+"\t"+documentId+"\n");
 			}
-			if (++count%25000 ==0) 
+			if (++this.count%25000 == 0) 
 			{
 				this.writer.flush();
 				this.writer.close();
-				this.sortFileQueue.add(filePath+"/"+prefix+fileCount);
-				count = 0;
-				this.writer = new FileWriter(new File(filePath, prefix+""+(++fileCount)));
+				this.count = 0;
+				this.sortFileQueue.add(filePath+"/"+prefix+(this.fileCount));
+				this.writer = new FileWriter(new File(filePath, prefix+""+(++this.fileCount)));
 			}
 	    } 
 		catch (Exception e) 

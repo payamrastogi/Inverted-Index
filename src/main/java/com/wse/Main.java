@@ -54,6 +54,7 @@ public class Main
 		
 		this.pathQueue = new ArrayBlockingQueue<>(5000);
 		this.parsedObjectQueue = new ArrayBlockingQueue<>(100000);
+		this.sortFileQueue = new ArrayBlockingQueue<>(1000);
 		this.executeCommand = new ExecuteCommand(this.config.getFindCommand(), pathQueue);
 		this.readGzip = new ReadGzip(this.parsedObjectQueue);
 		this.unixSort = new UnixSort(this.config.getSortCommand());

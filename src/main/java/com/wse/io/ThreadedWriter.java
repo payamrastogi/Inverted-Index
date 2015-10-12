@@ -33,7 +33,8 @@ public class ThreadedWriter implements Runnable
 				while((parsedObject=parsedObjectQueue.poll(10, TimeUnit.SECONDS))!=null)
 				{
 					writer.write(parsedObject);
-					if (++count % 25000 ==0) {
+					if (++count % 25000 ==0) 
+					{
 						logger.debug(" Tota Time: "+ elapsedTime.getTotalTimeInSeconds()+" seconds");
 						logger.debug("parsedObjectQueue: "+parsedObjectQueue.size());
 						count = 0;
