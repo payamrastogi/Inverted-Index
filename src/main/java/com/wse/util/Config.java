@@ -11,6 +11,7 @@ public class Config
 	private String findCommand;
 	private String stopWordsFilePath;
 	private String outputfilePath;
+	private String sortCommand;
 	
 	public Config(File configFile) 
 	{
@@ -40,6 +41,7 @@ public class Config
 		this.findCommand = prop.getProperty("findCommand");
 		this.stopWordsFilePath = prop.getProperty("stopWordsFilePath");
 		this.outputfilePath=prop.getProperty("outputFilePath");
+		this.sortCommand = prop.getProperty("sortCommand");
 	}
 	
 	private static Properties loadProperties(InputStream is) 
@@ -69,5 +71,9 @@ public class Config
 	public String getOutputFilePath()
 	{
 		return this.outputfilePath;
+	}
+
+	public String getSortCommand() {
+		return sortCommand;
 	}
 }

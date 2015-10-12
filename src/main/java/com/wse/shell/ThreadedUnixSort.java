@@ -6,9 +6,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.wse.model.ParsedObject;
-
-public class ThreadedUnixSort 
+public class ThreadedUnixSort implements Runnable
 {
 	private BlockingQueue<String> toSortQueue;
 	private UnixSort unixSort;
@@ -24,11 +22,10 @@ public class ThreadedUnixSort
 	{
 		for(int i=0;i<30;i++)
 		{
-
 			try
 			{
 				String filePath = null;
-				while((filePath = toSortQueue.poll(10, TimeUnit.SECONDS))!=null)
+				while((filePath = toSortQueue.poll(25, TimeUnit.SECONDS))!=null)
 				{
 					unixSort.sortFile(filePath);
 				}

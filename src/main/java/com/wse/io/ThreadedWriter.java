@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.wse.model.ParsedObject;
-import com.wse.model.VolumeIndexedObject;
 import com.wse.util.ElapsedTime;
 
 public class ThreadedWriter implements Runnable
@@ -34,8 +33,11 @@ public class ThreadedWriter implements Runnable
 				while((parsedObject=parsedObjectQueue.poll(10, TimeUnit.SECONDS))!=null)
 				{
 					writer.write(parsedObject);
-					logger.debug(" Tota Time: "+ elapsedTime.getTotalTimeInSeconds()+" seconds "+parsedObject.getVolumeId());
-					logger.debug("parsedObjectQueue: "+parsedObjectQueue.size());
+					if (++count % 25000 ==0) {
+						logger.debug(" Tota Time: "+ elapsedTime.getTotalTimeInSeconds()+" seconds");
+						logger.debug("parsedObjectQueue: "+parsedObjectQueue.size());
+						count = 0;
+					}
 				}
 			}
 			catch(InterruptedException e)

@@ -15,13 +15,13 @@ import com.wse.io.ThreadedWriter;
 import com.wse.io.Writer;
 import com.wse.model.ParsedObject;
 import com.wse.model.ReadObject;
-import com.wse.model.VolumeIndexedObject;
 import com.wse.parse.ReadGzip;
 import com.wse.parse.ThreadedReadGzip;
-import com.wse.parse.ThreadedVolumeIndexer;
 import com.wse.parse.VolumeIndexer;
 import com.wse.shell.ExecuteCommand;
 import com.wse.shell.ThreadedExecuteCommand;
+import com.wse.shell.ThreadedUnixSort;
+import com.wse.shell.UnixSort;
 import com.wse.util.Config;
 import com.wse.util.ElapsedTime;
 import com.wse.util.FileReader;
@@ -33,16 +33,16 @@ public class Main
 	private BlockingQueue<String> pathQueue;
 	private BlockingQueue<ReadObject> readObjectQueue;
 	private BlockingQueue<ParsedObject> parsedObjectQueue;
-	private BlockingQueue<VolumeIndexedObject> volumeIndexedObjectQueue;
+	private BlockingQueue<String> sortFileQueue;
 	
 	private Set<String> stopWords;
 	
 	private Config config;
 	private ExecuteCommand executeCommand;
 	private ReadGzip readGzip;
-	private VolumeIndexer volumeIndexer;
-	private Writer writer;
+	private Writer[] writers = new Writer[5];
 	private FileReader fileReader;
+	private UnixSort unixSort;
 	
 	private Logger logger = LoggerFactory.getLogger(Main.class);
 	
@@ -54,11 +54,12 @@ public class Main
 		
 		this.pathQueue = new ArrayBlockingQueue<>(5000);
 		this.parsedObjectQueue = new ArrayBlockingQueue<>(100000);
-		this.volumeIndexedObjectQueue = new ArrayBlockingQueue<>(100000);
 		this.executeCommand = new ExecuteCommand(this.config.getFindCommand(), pathQueue);
 		this.readGzip = new ReadGzip(this.parsedObjectQueue);
-		this.volumeIndexer = new VolumeIndexer(this.stopWords, this.volumeIndexedObjectQueue);
-		this.writer = new Writer(this.config.getOutputFilePath(), this.stopWords);
+		this.unixSort = new UnixSort(this.config.getSortCommand());
+		char ch = 'a' ;
+		for (int i =0 ;i<5 ;i++) 
+			this.writers[i] = new Writer(this.config.getOutputFilePath(),ch++, this.stopWords, this.sortFileQueue);
 	}
 	
 	public static void main(String args[]) throws Exception
@@ -77,11 +78,9 @@ public class Main
 			executor.submit(new ThreadedExecuteCommand(this.executeCommand));
 			executor.submit(new ThreadedReadGzip(this.readGzip, this.pathQueue));
 			//executor.submit(new ThreadedVolumeIndexer(this.volumeIndexer, this.parsedObjectQueue));
-			executor.submit(new ThreadedWriter(this.writer, this.parsedObjectQueue));
-			executor.submit(new ThreadedWriter(this.writer, this.parsedObjectQueue));
-			executor.submit(new ThreadedWriter(this.writer, this.parsedObjectQueue));
-			executor.submit(new ThreadedWriter(this.writer, this.parsedObjectQueue));
-			executor.submit(new ThreadedWriter(this.writer, this.parsedObjectQueue));
+			for (int i =0 ;i<5 ;i++)
+				executor.submit(new ThreadedWriter(this.writers[i], this.parsedObjectQueue));
+			executor.submit(new ThreadedUnixSort(this.unixSort, this.sortFileQueue));
 			executor.shutdownNow();
 		    executor.awaitTermination(10000, TimeUnit.SECONDS);
 			logger.debug(pathQueue.size()+"");
