@@ -12,6 +12,7 @@ public class Config
 	private String stopWordsFilePath;
 	private String outputfilePath;
 	private String sortCommand;
+	private String mergeCommand;
 	
 	public Config(File configFile) 
 	{
@@ -42,6 +43,7 @@ public class Config
 		this.stopWordsFilePath = prop.getProperty("stopWordsFilePath");
 		this.outputfilePath=prop.getProperty("outputFilePath");
 		this.sortCommand = prop.getProperty("sortCommand");
+		this.mergeCommand = prop.getProperty("mergeCommand");
 	}
 	
 	private static Properties loadProperties(InputStream is) 
@@ -75,5 +77,9 @@ public class Config
 
 	public String getSortCommand() {
 		return sortCommand;
+	}
+
+	public String getMergeCommand() {
+		return mergeCommand;
 	}
 }
