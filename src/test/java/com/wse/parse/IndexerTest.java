@@ -12,7 +12,7 @@ public class IndexerTest
 	{
 		String fileInputPath = "/Users/payamrastogi/Dropbox/workspace/indexer/output/e20_sorted";
 		String outputFilePath = "/Users/payamrastogi/Dropbox/workspace/indexer/output/e20_test";
-		Indexer indexer = new Indexer(fileInputPath, outputFilePath);
-		indexer.index();
+		//Indexer indexer = new Indexer(fileInputPath, outputFilePath);
+		//indexer.index();
 	}
 }
