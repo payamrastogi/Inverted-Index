@@ -3,6 +3,7 @@ package com.wse.parse;
 import java.io.File;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,11 +14,12 @@ public class ThreadedReadGzip implements Runnable
 {
 	private ReadGzip readGzip;
 	private BlockingQueue<String> pathQueue;
-
+	private AtomicBoolean flagReadGzip;
 	private Logger logger = LoggerFactory.getLogger(ThreadedReadGzip.class);
 	
-	public ThreadedReadGzip(ReadGzip readGzip, BlockingQueue<String> pathQueue)
+	public ThreadedReadGzip(ReadGzip readGzip, BlockingQueue<String> pathQueue,AtomicBoolean flagReadGzip)
 	{
+		this.flagReadGzip = flagReadGzip;
 		this.readGzip = readGzip;
 		this.pathQueue = pathQueue;
 	}
@@ -47,5 +49,6 @@ public class ThreadedReadGzip implements Runnable
 				logger.error(e.getMessage(), e);
 			}
 		}
+		this.flagReadGzip.getAndSet(false);
 	}
 }

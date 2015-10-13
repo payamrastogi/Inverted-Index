@@ -2,6 +2,7 @@ package com.wse.io;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,12 +14,14 @@ public class ThreadedWriter implements Runnable
 {
 	private final Logger logger = LoggerFactory.getLogger(ThreadedWriter.class);
 	private BlockingQueue<ParsedObject> parsedObjectQueue;
+	private AtomicInteger flagWriter;
 	private int count=0;
 	private Writer writer;
 	
-	public ThreadedWriter(Writer writer, BlockingQueue<ParsedObject> parsedObjectQueue)
+	public ThreadedWriter(Writer writer, BlockingQueue<ParsedObject> parsedObjectQueue, AtomicInteger flagWriter)
 	{
 		this.writer = writer;
+		this.flagWriter = flagWriter;
 		this.parsedObjectQueue = parsedObjectQueue;
 	}
 	
@@ -46,5 +49,6 @@ public class ThreadedWriter implements Runnable
 				logger.error("InterruptedException: "+ e);
 			}
 		}
+		flagWriter.decrementAndGet();
 	}
 }
