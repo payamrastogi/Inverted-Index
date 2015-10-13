@@ -12,11 +12,13 @@ public class ThreadedIndexer implements Runnable
 	private Indexer indexer;
 	private BlockingQueue<String> toIndexQueue;
 	private AtomicBoolean flag;
+	private AtomicBoolean flagReadGzip;
 	private final Logger logger = LoggerFactory.getLogger(ThreadedIndexer.class);
 	
-	public ThreadedIndexer(Indexer indexer, BlockingQueue<String> toIndexQueue, AtomicBoolean flag)
+	public ThreadedIndexer(Indexer indexer, BlockingQueue<String> toIndexQueue, AtomicBoolean flag, AtomicBoolean flagReadGzip)
 	{
 		this.flag = flag;
+		this.flagReadGzip = flagReadGzip;
 		this.indexer = indexer;
 		this.toIndexQueue = toIndexQueue;
 	}
@@ -24,26 +26,29 @@ public class ThreadedIndexer implements Runnable
 	@Override
 	public void run() 
 	{
-		for(int i=0;i<20;i++)
+		while(flagReadGzip.get())
 		{
-			try
+			for(int i=0;i<20;i++)
 			{
-				String filePath = null;
-				while((filePath = toIndexQueue.poll(10, TimeUnit.SECONDS))!=null)
+				try
 				{
-					try
+					String filePath = null;
+					while((filePath = toIndexQueue.poll(10, TimeUnit.SECONDS))!=null)
 					{
-						indexer.index(filePath, filePath+"_i");
-					}
-					catch(Exception e)
-					{
-						logger.debug(e.getMessage(), e);
+						try
+						{
+							indexer.index(filePath, filePath+"_i");
+						}
+						catch(Exception e)
+						{
+							logger.debug(e.getMessage(), e);
+						}
 					}
 				}
-			}
-			catch(InterruptedException e)
-			{
-				logger.error("InterruptedException: "+ e);
+				catch(InterruptedException e)
+				{
+					logger.error("InterruptedException: "+ e);
+				}
 			}
 		}
 		this.flag.getAndSet(false);

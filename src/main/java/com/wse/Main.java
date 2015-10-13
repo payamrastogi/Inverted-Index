@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +56,11 @@ public class Main
 	private UnixSort unixSort;
 	private UnixMerge unixMerge;
 	private Indexer indexer;
-	private AtomicBoolean flag;
+	private AtomicBoolean flag1;
+	private AtomicBoolean flag2;
+	private AtomicBoolean flagReadGzip;
+	private AtomicInteger flagWriter;
+	private static final int writerThreads = 2;
 	
 	private Logger logger = LoggerFactory.getLogger(Main.class);
 	
@@ -71,15 +76,17 @@ public class Main
 		this.toIndexQueue = new ArrayBlockingQueue<>(200);
 		this.toMergeQueue1 = new ArrayBlockingQueue<>(200);
 		this.toMergeQueue2 = new ArrayBlockingQueue<>(200);
-		this.flag = new AtomicBoolean(true);
-		
+		this.flag1 = new AtomicBoolean(true);
+		this.flag2 = new AtomicBoolean(true);
+		this.flagReadGzip = new AtomicBoolean(true);
+		this.flagWriter = new AtomicInteger(writerThreads);
 		this.executeCommand = new ExecuteCommand(this.config.getFindCommand(), pathQueue);
 		this.readGzip = new ReadGzip(this.parsedObjectQueue);
 		this.unixSort = new UnixSort(this.config.getSortCommand(), this.toIndexQueue);
 		this.indexer = new Indexer(this.toMergeQueue1, this.toMergeQueue2);
 		this.unixMerge = new UnixMerge(this.config.getMergeCommand(), this.config.getOutputFilePath());
 		char ch = 'a' ;
-		for (int i =0 ;i<5 ;i++) 
+		for (int i =0 ;i<writerThreads ;i++) 
 			this.writers[i] = new Writer(this.config.getOutputFilePath(),ch++, this.stopWords, this.toSortQueue);
 	}
 	
@@ -104,20 +111,22 @@ public class Main
 			//execute unix find command
 			executor.submit(new ThreadedExecuteCommand(this.executeCommand));
 			// read gzip file and get parsedobject
-			executor.submit(new ThreadedReadGzip(this.readGzip, this.pathQueue));
+			executor.submit(new ThreadedReadGzip(this.readGzip, this.pathQueue, this.flagReadGzip));
 			// write parsed object to file
-			for (int i =0 ;i<5 ;i++)
-				executor.submit(new ThreadedWriter(this.writers[i], this.parsedObjectQueue));
+			for (int i =0 ;i<writerThreads ;i++)
+				executor.submit(new ThreadedWriter(this.writers[i], this.parsedObjectQueue, this.flagWriter));
 			// sort parsed file using unix sort
 			executor.submit(new ThreadedUnixSort(this.unixSort, this.toSortQueue));
-			executor.submit(new ThreadedIndexer(this.indexer, this.toIndexQueue, this.flag));
+			executor.submit(new ThreadedIndexer(this.indexer, this.toIndexQueue, this.flag1, this.flagReadGzip));
+			executor.submit(new ThreadedIndexer(this.indexer, this.toIndexQueue, this.flag2, this.flagReadGzip));
 			// merge sorted files
-			executor.submit(new ThreadedUnixMerge(this.unixMerge, this.toMergeQueue1, this.toMergeQueue2, this.flag));
+			executor.submit(new ThreadedUnixMerge(this.unixMerge, this.toMergeQueue1, this.toMergeQueue2, this.flag1, this.flag2));
 			executor.shutdownNow();
-		    executor.awaitTermination(10000, TimeUnit.SECONDS);
+		    executor.awaitTermination(5000, TimeUnit.SECONDS);
 		    
 		    //create final index
 		    String inputFilePath = toMergeQueue1.isEmpty()?toMergeQueue2.poll():toMergeQueue1.poll();
+		    indexer.createFinalIndex(inputFilePath, inputFilePath+"i");
 			logger.debug(pathQueue.size()+"");
 			logger.debug(parsedObjectQueue.size()+"");
 			logger.debug(toSortQueue.size()+"");

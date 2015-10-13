@@ -11,21 +11,23 @@ public class ThreadedUnixMerge implements Runnable
 {
 	private BlockingQueue<String> mergeQueue1;
 	private BlockingQueue<String> mergeQueue2;
-	private AtomicBoolean flag;
+	private AtomicBoolean flag1;
+	private AtomicBoolean flag2;
 	private UnixMerge unixMerge;
 	private final Logger logger = LoggerFactory.getLogger(ThreadedUnixMerge.class);
 	
-	public ThreadedUnixMerge(UnixMerge unixMerge, BlockingQueue<String> mergeQueue1, BlockingQueue<String> mergeQueue2, AtomicBoolean flag)
+	public ThreadedUnixMerge(UnixMerge unixMerge, BlockingQueue<String> mergeQueue1, BlockingQueue<String> mergeQueue2, AtomicBoolean flag1, AtomicBoolean flag2)
 	{
 		this.unixMerge = unixMerge;
 		this.mergeQueue1 = mergeQueue1;
 		this.mergeQueue2 = mergeQueue2;
-		this.flag=flag;
+		this.flag1=flag1;
+		this.flag2=flag2;
 	}
 	
 	public void run()
 	{
-		while(flag.get())
+		while(flag1.get() || flag2.get())
 		{
 			try
 			{
