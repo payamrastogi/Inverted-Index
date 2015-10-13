@@ -14,10 +14,9 @@ import org.slf4j.LoggerFactory;
 import com.wse.io.ThreadedWriter;
 import com.wse.io.Writer;
 import com.wse.model.ParsedObject;
-import com.wse.model.ReadObject;
+import com.wse.parse.Indexer;
 import com.wse.parse.ReadGzip;
 import com.wse.parse.ThreadedReadGzip;
-import com.wse.parse.VolumeIndexer;
 import com.wse.shell.ExecuteCommand;
 import com.wse.shell.ThreadedExecuteCommand;
 import com.wse.shell.ThreadedUnixMerge;
@@ -27,14 +26,19 @@ import com.wse.shell.UnixSort;
 import com.wse.util.Config;
 import com.wse.util.ElapsedTime;
 import com.wse.util.FileReader;
-//import com.wse.util.Pair;
 
+
+//Main file 
 public class Main
 {
 	private static final String configPropPath = "src/main/resources/config.properties";
+	//Queue to store filePaths of gzip index files
 	private BlockingQueue<String> pathQueue;
+	//Queue to store Parsed Objects
 	private BlockingQueue<ParsedObject> parsedObjectQueue;
+	//Queue to store filePaths of files to be sorted by unix sort
 	private BlockingQueue<String> sortFileQueue;
+	//Queue to store filePaths of files to be merged by unix merge
 	private BlockingQueue<String> mergeFileQueue1;
 	private BlockingQueue<String> mergeFileQueue2;
 	
@@ -47,6 +51,7 @@ public class Main
 	private FileReader fileReader;
 	private UnixSort unixSort;
 	private UnixMerge unixMerge;
+	private Indexer indexer;
 	
 	private Logger logger = LoggerFactory.getLogger(Main.class);
 	
@@ -78,20 +83,35 @@ public class Main
 		main.execute();
 		main.logger.debug("Total Time: "+ elapsedTime.getTotalTimeInSeconds() +" seconds");
 	}
-	
+	//creating pipeline between different phases
+	// phase 1. read Index file and get html page from gzip file
+	// phase 2. parse html page and write parsed pages to disk
+	// phase 3. sort parsed file using unix sort
+	// phase 4. merge sorted files
+	// create final index from merged file
 	public void execute()
 	{
 		try
 		{
-			ExecutorService executor = Executors.newCachedThreadPool();		
+			ExecutorService executor = Executors.newCachedThreadPool();	
+			//execute unix find command
 			executor.submit(new ThreadedExecuteCommand(this.executeCommand));
+			// read gzip file and get parsedobject
 			executor.submit(new ThreadedReadGzip(this.readGzip, this.pathQueue));
+			// write parsed object to file
 			for (int i =0 ;i<5 ;i++)
 				executor.submit(new ThreadedWriter(this.writers[i], this.parsedObjectQueue));
+			// sort parsed file using unix sort
 			executor.submit(new ThreadedUnixSort(this.unixSort, this.sortFileQueue));
+			// merge sorted files
 			executor.submit(new ThreadedUnixMerge(this.unixMerge, this.mergeFileQueue1, this.mergeFileQueue2));
 			executor.shutdownNow();
 		    executor.awaitTermination(10000, TimeUnit.SECONDS);
+		    
+		    //create final index
+		    String inputFilePath = mergeFileQueue1.isEmpty()?mergeFileQueue2.poll():mergeFileQueue1.poll();
+		    this.indexer = new Indexer(inputFilePath, this.config.getOutputFilePath()+"/final");
+		    this.indexer.index();
 			logger.debug(pathQueue.size()+"");
 			logger.debug(parsedObjectQueue.size()+"");
 			logger.debug(sortFileQueue.size()+"");

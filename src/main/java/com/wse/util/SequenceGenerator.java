@@ -3,7 +3,7 @@ package com.wse.util;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-
+//to generate unique document id ot any ids according to calling class
 public final class SequenceGenerator 
 {
 	@SuppressWarnings("rawtypes")

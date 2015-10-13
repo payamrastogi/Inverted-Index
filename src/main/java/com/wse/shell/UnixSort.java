@@ -20,13 +20,15 @@ public class UnixSort
 		this.mergeFileQueue1 = mergeFileQueue1;
 		this.mergeFileQueue2 = mergeFileQueue2;
 	}
-	
+	//execute sort command to sort parsed files 
+	//sort -k1,1 -k2,2n <file1> -o <output>
 	public void sortFile(String filePath)
 	{
 		ElapsedTime elapsedTime = new ElapsedTime();
 		logger.debug("execute: "+this.sortCommand+ filePath+ " -o "+filePath+"_sorted");
 		try 
 		{
+			//execute sort command
 			Process p  = new ProcessBuilder("/bin/bash", "-c",this.sortCommand+ filePath+ " -o "+filePath+"_sorted").start();
 		    int returnCode = p.waitFor();
 		    if (mergeFileQueue2.size() <= mergeFileQueue1.size()) {
@@ -35,6 +37,7 @@ public class UnixSort
 		    	mergeFileQueue1.add(filePath+"_sorted");
 		    }
 		    logger.debug("Queue size : "+mergeFileQueue1.size() + "--" + mergeFileQueue2.size());
+		    //deleted unsorted file
 		    new ProcessBuilder("/bin/bash", "-c","rm "+ filePath).start();
 		    logger.debug("executeCommand Return code : "+returnCode);
 		} 

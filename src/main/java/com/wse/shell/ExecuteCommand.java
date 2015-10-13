@@ -21,7 +21,8 @@ public class ExecuteCommand
 		this.command = command;
 		this.pathQueue = pathQueue;
 	}
-	
+	//execute find command to list path of all the index files
+	//find /Users/payamrastogi/NZ/data/4c/tux-4/polybot/gzipped_sorted_nz -regex .*/*_index -print
 	public void execute() 
 	{
 		ElapsedTime elapsedTime = new ElapsedTime();
