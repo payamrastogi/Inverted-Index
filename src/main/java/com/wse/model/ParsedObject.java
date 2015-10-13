@@ -1,5 +1,9 @@
 package com.wse.model;
 
+//Parsed Object 
+//volumeId - unique id of the volume in NZ data
+//documentId - unique id of the document 
+//parsedContent - StringBuilder return by the Parser.parseDoc
 public class ParsedObject 
 {
 	private int volumeId;

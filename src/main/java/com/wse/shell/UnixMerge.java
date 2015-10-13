@@ -16,7 +16,8 @@ public class UnixMerge
 		this.mergeCommand = mergeCommand;
 		this.outputPath = outputPath;
 	}
-	
+	//execute unix merge command to merge all the sorted files
+	//sort -m <file1> <file2> -o <output>
 	public String mergeFiles(String file1, String file2)
 	{
 		ElapsedTime elapsedTime = new ElapsedTime();
@@ -25,8 +26,10 @@ public class UnixMerge
 		logger.debug("execute: "+this.mergeCommand+ file1 + " "+file2+" -o " + outputFileName);
 		try 
 		{
+			//execute sort -m (merge) command
 			Process p  = new ProcessBuilder("/bin/bash", "-c",this.mergeCommand+ file1 + " "+file2+" -o " + outputFileName).start();
 		    int returnCode = p.waitFor();
+		    //delete sorted files
 		    new ProcessBuilder("/bin/bash", "-c","rm "+ file1).start();
 		    new ProcessBuilder("/bin/bash", "-c","rm "+ file2).start();
 		    logger.debug("execute Return code : "+returnCode);

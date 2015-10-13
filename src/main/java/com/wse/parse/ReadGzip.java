@@ -17,9 +17,11 @@ import com.wse.util.SequenceGenerator;
 
 import edu.poly.cs912.Parser;
 
+//to read and parse gzip file
 public class ReadGzip 
 {	
 	private Logger logger = LoggerFactory.getLogger(ReadGzip.class);
+	//parsed data to be added in this queue
 	private BlockingQueue<ParsedObject> parsedObjectQueue;
 	private int size;
 	private int count=0;

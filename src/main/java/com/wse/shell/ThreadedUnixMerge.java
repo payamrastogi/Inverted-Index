@@ -1,8 +1,8 @@
 package com.wse.shell;
 
-import java.io.File;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,19 +11,21 @@ public class ThreadedUnixMerge implements Runnable
 {
 	private BlockingQueue<String> mergeQueue1;
 	private BlockingQueue<String> mergeQueue2;
+	private AtomicBoolean flag;
 	private UnixMerge unixMerge;
-	private final Logger logger = LoggerFactory.getLogger(ThreadedUnixSort.class);
+	private final Logger logger = LoggerFactory.getLogger(ThreadedUnixMerge.class);
 	
-	public ThreadedUnixMerge(UnixMerge unixMerge, BlockingQueue<String> mergeQueue1, BlockingQueue<String> mergeQueue2)
+	public ThreadedUnixMerge(UnixMerge unixMerge, BlockingQueue<String> mergeQueue1, BlockingQueue<String> mergeQueue2, AtomicBoolean flag)
 	{
 		this.unixMerge = unixMerge;
 		this.mergeQueue1 = mergeQueue1;
 		this.mergeQueue2 = mergeQueue2;
+		this.flag=flag;
 	}
 	
 	public void run()
 	{
-		for(int i=0;i<50;i++)
+		while(flag.get())
 		{
 			try
 			{

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-
+//to read stop word list from file
 public class FileReader 
 {
 	private String filePath;

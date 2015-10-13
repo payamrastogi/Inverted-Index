@@ -13,8 +13,6 @@ public class ThreadedReadGzip implements Runnable
 {
 	private ReadGzip readGzip;
 	private BlockingQueue<String> pathQueue;
-	//private BlockingQueue<ReadObject> readObjectQueue;
-	//private BlockingQueue<ParsedObject> parsedObjectQueue;
 
 	private Logger logger = LoggerFactory.getLogger(ThreadedReadGzip.class);
 	

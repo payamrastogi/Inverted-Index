@@ -11,30 +11,26 @@ public class UnixSort
 {	
 	private final String sortCommand;
 	private final Logger logger = LoggerFactory.getLogger(UnixSort.class);
-	private BlockingQueue<String> mergeFileQueue1;
-	private BlockingQueue<String> mergeFileQueue2;
+	private BlockingQueue<String> indexFileQueue;
 	
-	public UnixSort(String sortCommand, BlockingQueue<String> mergeFileQueue1,BlockingQueue<String> mergeFileQueue2)
+	public UnixSort(String sortCommand, BlockingQueue<String> indexFileQueue)
 	{
 		this.sortCommand = sortCommand;
-		this.mergeFileQueue1 = mergeFileQueue1;
-		this.mergeFileQueue2 = mergeFileQueue2;
+		this.indexFileQueue = indexFileQueue;
 	}
-	
+	//execute sort command to sort parsed files 
+	//sort -k1,1 -k2,2n <file1> -o <output>
 	public void sortFile(String filePath)
 	{
 		ElapsedTime elapsedTime = new ElapsedTime();
 		logger.debug("execute: "+this.sortCommand+ filePath+ " -o "+filePath+"_sorted");
 		try 
 		{
+			//execute sort command
 			Process p  = new ProcessBuilder("/bin/bash", "-c",this.sortCommand+ filePath+ " -o "+filePath+"_sorted").start();
 		    int returnCode = p.waitFor();
-		    if (mergeFileQueue2.size() <= mergeFileQueue1.size()) {
-		    	mergeFileQueue2.add(filePath+"_sorted");
-		    } else {
-		    	mergeFileQueue1.add(filePath+"_sorted");
-		    }
-		    logger.debug("Queue size : "+mergeFileQueue1.size() + "--" + mergeFileQueue2.size());
+		    indexFileQueue.add(filePath+"_sorted");
+		    //deleted unsorted file
 		    new ProcessBuilder("/bin/bash", "-c","rm "+ filePath).start();
 		    logger.debug("executeCommand Return code : "+returnCode);
 		} 

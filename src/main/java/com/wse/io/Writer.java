@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.wse.model.ParsedObject;
 
+//write parsed files to disk
 public class Writer 
 {
 	private final Logger logger = LoggerFactory.getLogger(Writer.class);
@@ -29,7 +30,7 @@ public class Writer
 		this.writer = new FileWriter(new File(filePath, prefix+"0"));
 		this.sortFileQueue = sortFileQueue;
 	}
-	
+	// input param : ParsedObject to be written in file
 	public void write(ParsedObject parsedObject)
 	{
 		try 
@@ -57,5 +58,18 @@ public class Writer
 	          logger.error("Exception in writer: " + e.getMessage(), e);
 	    }
 	}
-	
+	public void writeLast()
+	{
+		try
+		{
+			this.writer.flush();
+			this.writer.close();
+			this.count = 0;
+			this.sortFileQueue.add(filePath+"/"+prefix+(this.fileCount));
+		}
+		catch(Exception e)
+		{
+			logger.error(e.getMessage(), e);
+		}
+	}
 }
