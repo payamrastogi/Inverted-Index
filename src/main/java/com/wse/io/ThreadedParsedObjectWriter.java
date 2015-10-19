@@ -10,15 +10,15 @@ import org.slf4j.LoggerFactory;
 import com.wse.model.ParsedObject;
 import com.wse.util.ElapsedTime;
 
-public class ThreadedWriter implements Runnable
+public class ThreadedParsedObjectWriter implements Runnable
 {
-	private final Logger logger = LoggerFactory.getLogger(ThreadedWriter.class);
+	private final Logger logger = LoggerFactory.getLogger(ThreadedParsedObjectWriter.class);
 	private BlockingQueue<ParsedObject> parsedObjectQueue;
 	private AtomicInteger flagWriter;
 	private int count=0;
-	private Writer writer;
+	private ParsedObjectWriter writer;
 	
-	public ThreadedWriter(Writer writer, BlockingQueue<ParsedObject> parsedObjectQueue, AtomicInteger flagWriter)
+	public ThreadedParsedObjectWriter(ParsedObjectWriter writer, BlockingQueue<ParsedObject> parsedObjectQueue, AtomicInteger flagWriter)
 	{
 		this.writer = writer;
 		this.flagWriter = flagWriter;

@@ -11,9 +11,9 @@ import org.slf4j.LoggerFactory;
 import com.wse.model.ParsedObject;
 
 //write parsed files to disk
-public class Writer 
+public class ParsedObjectWriter 
 {
-	private final Logger logger = LoggerFactory.getLogger(Writer.class);
+	private final Logger logger = LoggerFactory.getLogger(ParsedObjectWriter.class);
 	private FileWriter writer;
 	private Set<String> stopWords;
 	private String filePath;
@@ -22,7 +22,7 @@ public class Writer
 	private int fileCount;
 	private BlockingQueue<String> sortFileQueue;
 	
-	public Writer(String filePath,char prefix,Set<String> stopWords, BlockingQueue<String> sortFileQueue) throws Exception
+	public ParsedObjectWriter(String filePath,char prefix,Set<String> stopWords, BlockingQueue<String> sortFileQueue) throws Exception
 	{
 		this.filePath = filePath;
 		this.stopWords = stopWords;

@@ -23,12 +23,18 @@ public class ReadGzip
 	private Logger logger = LoggerFactory.getLogger(ReadGzip.class);
 	//parsed data to be added in this queue
 	private BlockingQueue<ParsedObject> parsedObjectQueue;
+	private BlockingQueue<String> documentQueue;
 	private int size;
-	private int count=0;
 	
-	public ReadGzip(BlockingQueue<ParsedObject> parsedObjectQueue)
+	private long totalDocuments;
+	private double averageLengthOfDocuments;
+	
+	public ReadGzip(BlockingQueue<ParsedObject> parsedObjectQueue, BlockingQueue<String> documentQueue, long totalDocuments, double averageLengthOfDocuments)
 	{
 		this.parsedObjectQueue = parsedObjectQueue;
+		this.documentQueue = documentQueue;
+		this.totalDocuments = totalDocuments;
+		this.averageLengthOfDocuments = averageLengthOfDocuments;
 	}
 	
 	public void read(File file) throws InterruptedException
@@ -52,6 +58,7 @@ public class ReadGzip
 						while((line=br.readLine())!=null)
 						{
 							this.size = Integer.parseInt(line.split("\\s")[3]);
+							this.averageLengthOfDocuments += size;
 							byte[] bytes = new byte[this.size];
 							gzisData.read(bytes);
 							int volumeId = Integer.parseInt(fileName)/100;
@@ -64,14 +71,17 @@ public class ReadGzip
 							catch(Exception e)
 							{
 								logger.error(e.getMessage(), e);
+								continue;
 							}
 							this.parsedObjectQueue.add(new ParsedObject(volumeId, documentId, sb));
-							if(++count%10000==0)
-								logger.debug("Done: "+ count+" Total Time: "+elapsedTime.getTotalTimeInSeconds()+" seconds");
+							this.documentQueue.add(documentId + "\t"+ dataFile.getAbsolutePath());
+							if(++this.totalDocuments%10000==0)
+								logger.debug("Done: "+ totalDocuments+" Total Time: "+elapsedTime.getTotalTimeInSeconds()+" seconds");
 						}
 					}
 				}		
 			}
+			this.averageLengthOfDocuments = this.averageLengthOfDocuments/this.totalDocuments; 
 		} 
 		catch (IOException e) 
 		{
