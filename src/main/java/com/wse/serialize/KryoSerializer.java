@@ -7,37 +7,31 @@ import java.io.FileOutputStream;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import com.wse.model.MetaObject;
 
-public class IndexSerializer {
+public class KryoSerializer {
 	
-	public static void indexSerialize(WordIndex wordIndex) {
-	    try (Output output = new Output(new FileOutputStream("KryoTest.ser"))) {
+	public void serialize(MetaObject metaObject) {
+	    try (Output output = new Output(new FileOutputStream("meta.ser"))) {
 	    	Kryo kryo=new Kryo();
-	        kryo.writeClassAndObject(output, wordIndex);
+	        kryo.writeClassAndObject(output, metaObject);
 	    } catch (FileNotFoundException ex) {
 	    	//Logger.getLogger(IndexSerializer.class.getName()).log(Level.SEVERE, null, ex);
 	    	ex.printStackTrace();
 	    }	        
 	}
 	
-	public static WordIndex indexDeserialize() {
-		WordIndex retrievedObject=null;
+	public MetaObject deserialize() {
+		MetaObject retrievedObject=null;
 
-        try (Input input = new Input( new FileInputStream("KryoTest.ser"))){
+        try (Input input = new Input( new FileInputStream("meta.ser"))){
             Kryo kryo=new Kryo();
-            retrievedObject=(WordIndex)kryo.readClassAndObject(input);
+            retrievedObject=(MetaObject)kryo.readClassAndObject(input);
         } catch (FileNotFoundException ex) {
             //Logger.getLogger(IndexSerializer.class.getName()).log(Level.SEVERE, null, ex);
         	ex.printStackTrace();
         }
         System.out.println("Retrieved from file: " + retrievedObject.toString());
         return retrievedObject;
-	}
-	
-	public static void main(String[] args) {
-		WordIndex indexObject = new WordIndex("Hello",1,2);
-		IndexSerializer.indexSerialize(indexObject);
-		WordIndex retrivedObject = IndexSerializer.indexDeserialize();
-		System.out.println(retrivedObject);
 	}
 }
