@@ -16,6 +16,11 @@ public class PostingObject
 		return this.documentId;
 	}
 	
+	public void setDocumentId(long documentId)
+	{
+		this.documentId = documentId;
+	}
+	
 	public long getFrequency()
 	{
 		return this.frequency;
