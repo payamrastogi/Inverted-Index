@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.wse.compress.VByte;
 import com.wse.model.Lexicon;
+import com.wse.model.PostingObject;
 
 public class DocumentAtATime 
 {
@@ -21,13 +22,13 @@ public class DocumentAtATime
 	private String invertedIndexFilePath;
 	private RandomAccessFile randomAccessFile;
 	private final Logger logger = LoggerFactory.getLogger(DocumentAtATime.class);
-	private Map<String, Long> map;
+	private Map<String, Long> filePointerMap;
 	
 	public DocumentAtATime(List<String> queryTerms, Lexicon[] lexicons)
 	{
 		this.queryTerms = queryTerms;
 		this.lexicons = lexicons;
-		this.map = new HashMap<>();
+		this.filePointerMap = new HashMap<>();
 		try
 		{
 			this.randomAccessFile = new RandomAccessFile(this.invertedIndexFilePath, "r");
@@ -47,7 +48,7 @@ public class DocumentAtATime
 		{
 			this.randomAccessFile.seek(lexicon.getPostingListStart());
 			filePointer = this.randomAccessFile.getFilePointer();
-			map.put(queryTerm.getWord(), filePointer);
+			filePointerMap.put(queryTerm.getWord(), filePointer);
 		}
 		catch(IOException e)
 		{
@@ -55,25 +56,34 @@ public class DocumentAtATime
 		}
 	}
 	
-	public void nextGEQ(long filePointer, long documentId)
+	public PostingObject nextGEQ(String term, long filePointer, long documentId)
 	{
-		
+		PostingObject postingObject = this.getDocumentId(term, filePointer);
+		while(postingObject.getDocumentId() < documentId)
+		{
+			postingObject = this.getDocumentId(term, filePointerMap.get(term));
+		}
+		return postingObject;
 	}
 	
-	public long getDocumentId(long filePointer)
-	{
+	public PostingObject getDocumentId(String term, long filePointer)
+	{	
+		//ToDo : check for end of the posting list reach
 		long docId = -1;
+		long freq = -1;
+		PostingObject postingObject = null;
 		try
 		{
 			VByte vByte = new VByte();
 			docId = vByte.decode(this.randomAccessFile, filePointer);
-			//skip frequency
-			vByte.decode(randomAccessFile, randomAccessFile.getFilePointer());
+			freq = vByte.decode(randomAccessFile, randomAccessFile.getFilePointer());
+			postingObject = new PostingObject(docId, freq);
+			filePointerMap.put(term, randomAccessFile.getFilePointer());
 		}
 		catch(IOException e)
 		{
 			logger.error(e.getMessage(), e);
 		}
-		return docId;
+		return postingObject;
 	}
 }
