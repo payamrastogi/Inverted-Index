@@ -74,7 +74,7 @@ public class ReadGzip
 								continue;
 							}
 							this.parsedObjectQueue.add(new ParsedObject(volumeId, documentId, sb));
-							this.documentQueue.add(documentId + "\t"+ dataFile.getAbsolutePath());
+							this.documentQueue.add(documentId + "\t"+ dataFile.getAbsolutePath() + "\t"+ this.size);
 							if(++this.totalDocuments%10000==0)
 								logger.debug("Done: "+ totalDocuments+" Total Time: "+elapsedTime.getTotalTimeInSeconds()+" seconds");
 						}
