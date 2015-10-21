@@ -21,10 +21,10 @@ public class Indexer {
 	private BlockingQueue<String> lexiconQueue;
 
 	public Indexer(BlockingQueue<String> toMergeQueue1,
-			BlockingQueue<String> toMergeQueue2) {
+			BlockingQueue<String> toMergeQueue2, BlockingQueue<String> lexiconQueue) {
 		this.toMergeQueue1 = toMergeQueue1;
 		this.toMergeQueue2 = toMergeQueue2;
-		this.lexiconQueue = new ArrayBlockingQueue<>(100000);
+		this.lexiconQueue = lexiconQueue;
 	}
 
 	public void index(String inputFilePath, String outputFilePath) {
@@ -338,7 +338,7 @@ public class Indexer {
 	public static void main(String args[])
 	{
 		BlockingQueue<String> merge  = new ArrayBlockingQueue<>(1);
-		Indexer indexer = new Indexer(merge, merge);
+		Indexer indexer = new Indexer(merge, merge, merge);
 		indexer.createFinalIndex("/Users/payamrastogi/Dropbox/workspace/indexer/output/m_102", "/Users/payamrastogi/Dropbox/workspace/indexer/output/m_102_final");
 	}
 }

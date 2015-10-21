@@ -17,6 +17,7 @@ import com.wse.io.ThreadedParsedObjectWriter;
 import com.wse.io.DocumentWriter;
 import com.wse.io.ParsedObjectWriter;
 import com.wse.io.ThreadedDocumentWriter;
+import com.wse.io.ThreadedLexiconWriter;
 import com.wse.model.MetaObject;
 import com.wse.model.ParsedObject;
 import com.wse.parse.Indexer;
@@ -51,6 +52,7 @@ public class Main
 	private BlockingQueue<String> toMergeQueue2;
 	
 	private BlockingQueue<String> documentQueue;
+	private BlockingQueue<String> lexiconQueue;
 	
 	private long totalDocuments;
 	private double averageLengthOfDocuments;
@@ -90,6 +92,7 @@ public class Main
 		this.toIndexQueue = new ArrayBlockingQueue<>(200);
 		this.toMergeQueue1 = new ArrayBlockingQueue<>(200);
 		this.toMergeQueue2 = new ArrayBlockingQueue<>(200);
+		this.lexiconQueue = new ArrayBlockingQueue<>(10000);
 		this.flag1 = new AtomicBoolean(true);
 		this.flag2 = new AtomicBoolean(true);
 		this.flagReadGzip = new AtomicBoolean(true);
@@ -97,7 +100,7 @@ public class Main
 		this.executeCommand = new ExecuteCommand(this.config.getFindCommand(), pathQueue);
 		this.readGzip = new ReadGzip(this.parsedObjectQueue, this.documentQueue, this.totalDocuments, this.averageLengthOfDocuments);
 		this.unixSort = new UnixSort(this.config.getSortCommand(), this.toIndexQueue);
-		this.indexer = new Indexer(this.toMergeQueue1, this.toMergeQueue2);
+		this.indexer = new Indexer(this.toMergeQueue1, this.toMergeQueue2, this.lexiconQueue);
 		this.unixMerge = new UnixMerge(this.config.getMergeCommand(), this.config.getOutputFilePath());
 		char ch = 'a' ;
 		for (int i =0 ;i<writerThreads ;i++) 
@@ -137,6 +140,7 @@ public class Main
 			executor.submit(new ThreadedIndexer(this.indexer, this.toIndexQueue, this.flag2, this.flagReadGzip));
 			// merge sorted files
 			executor.submit(new ThreadedUnixMerge(this.unixMerge, this.toMergeQueue1, this.toMergeQueue2, this.flag1, this.flag2));
+			executor.submit(new ThreadedLexiconWriter(this.lexiconQueue, this.config.getOutputFilePath()));
 			executor.shutdownNow();
 		    executor.awaitTermination(5000, TimeUnit.SECONDS);
 		    
