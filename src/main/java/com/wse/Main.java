@@ -72,8 +72,7 @@ public class Main
 	private AtomicBoolean flag2;
 	private AtomicBoolean flagReadGzip;
 	private AtomicInteger flagWriter;
-	
-	private KryoSerializer kryoSerializer;
+	private Integer lexiconCount;
 	private MetaObject metaObject;
 	private static final int writerThreads = 2;
 	
@@ -140,7 +139,7 @@ public class Main
 			executor.submit(new ThreadedIndexer(this.indexer, this.toIndexQueue, this.flag2, this.flagReadGzip));
 			// merge sorted files
 			executor.submit(new ThreadedUnixMerge(this.unixMerge, this.toMergeQueue1, this.toMergeQueue2, this.flag1, this.flag2));
-			executor.submit(new ThreadedLexiconWriter(this.lexiconQueue, this.config.getOutputFilePath()));
+			executor.submit(new ThreadedLexiconWriter(this.lexiconQueue, this.config.getOutputFilePath(), this.lexiconCount));
 			executor.shutdownNow();
 		    executor.awaitTermination(5000, TimeUnit.SECONDS);
 		    
@@ -148,7 +147,7 @@ public class Main
 		    String inputFilePath = toMergeQueue1.isEmpty()?toMergeQueue2.poll():toMergeQueue1.poll();
 		    indexer.createFinalIndex(inputFilePath, inputFilePath+"i");
 		    
-		    this.kryoSerializer = new KryoSerializer();
+		    KryoSerializer kryoSerializer = new KryoSerializer();
 		    this.metaObject = new MetaObject(this.totalDocuments, this.averageLengthOfDocuments);
 		    kryoSerializer.serialize(metaObject);
 			logger.debug(pathQueue.size()+"");

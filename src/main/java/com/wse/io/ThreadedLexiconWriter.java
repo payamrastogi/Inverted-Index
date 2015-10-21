@@ -17,12 +17,13 @@ public class ThreadedLexiconWriter implements Runnable
 	private BlockingQueue<String> lexiconQueue;
 	private FileWriter writer;
 	private String filePath;
-	private int count=0;
+	private Integer count;
 	
-	public ThreadedLexiconWriter(BlockingQueue<String> lexiconQueue, String filePath)
+	public ThreadedLexiconWriter(BlockingQueue<String> lexiconQueue, String filePath, Integer count)
 	{
 		this.lexiconQueue = lexiconQueue;
 		this.filePath = filePath;
+		this.count = count;
 	}
 	
 	public void run()

@@ -4,6 +4,7 @@ public class MetaObject
 {
 	private long totalDocuments;
 	private double averageLengthOfDocuments;
+	private Integer lexiconCount;
 	
 	public MetaObject(long totalDocuments, double averageLengthOfDocuments)
 	{
@@ -19,5 +20,10 @@ public class MetaObject
 	public double getAverageLengthOfDocuments()
 	{
 		return this.averageLengthOfDocuments;
+	}
+	
+	public Integer getLexiconCount()
+	{
+		return this.lexiconCount;
 	}
 }
