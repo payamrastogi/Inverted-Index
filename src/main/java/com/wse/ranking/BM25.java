@@ -26,7 +26,7 @@ public class BM25
 		this.dAvg = dAvg;
 	}
 	
-	public double getScore(int ft, long fdt, int d)
+	public double getScore(int ft, long fdt, long d)
 	{
 		double score = 0.0;
 		double K = k1 * (1-b) + b * (d/this.dAvg);

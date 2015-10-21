@@ -45,7 +45,7 @@ public class SearchMain
 	public void getSearchResults(String searchQuery)
 	{
 		String[] searchTerms = searchQuery.split("\\s");
-		this.daat = new DocumentAtATime(searchTerms, this.lexicons, resultCount, this.bm25);
+		this.daat = new DocumentAtATime(searchTerms, this.lexicons, resultCount, this.bm25, this.documentObjectMap);
 		roQueue = this.daat.getConjunctionResult();
 		//ToDo: get Document URL from documentObjectMap 
 		// and display the result
