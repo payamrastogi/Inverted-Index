@@ -47,8 +47,11 @@ public class SearchMain
 		String[] searchTerms = searchQuery.split("\\s");
 		this.daat = new DocumentAtATime(searchTerms, this.lexicons, resultCount, this.bm25, this.documentObjectMap);
 		roQueue = this.daat.getConjunctionResult();
-		//ToDo: get Document URL from documentObjectMap 
-		// and display the result
+		for(ResultObject ro:roQueue)
+		{
+			DocumentObject documentObject = this.documentObjectMap.get(ro.getDocumentId());
+			System.out.println(documentObject.getDocumentPath() + " : " + ro.getBm25Score());
+		}
 	}
 	
 	public static void main()
@@ -57,7 +60,7 @@ public class SearchMain
 		System.out.println("Search Query: ");
 		Scanner scanner = new Scanner(System.in);
 		String searchQuery = scanner.nextLine();
+		scanner.close();
 		sm.getSearchResults(searchQuery);
-		
 	}
 }
