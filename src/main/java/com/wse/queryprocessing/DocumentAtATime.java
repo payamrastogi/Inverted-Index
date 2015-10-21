@@ -6,7 +6,6 @@ import java.io.RandomAccessFile;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -27,7 +26,7 @@ public class DocumentAtATime
 	private int resultCount;
 	private Lexicon[] lexicons;
 	private Lexicon[] termLexicons;
-	private List<String> queryTerms;
+	private String[] queryTerms;
 	private String invertedIndexFilePath;
 	private Map<String, Long> filePointerMap;
 	private Queue<ResultObject> priorityQueue;
@@ -36,13 +35,13 @@ public class DocumentAtATime
 	
 	private final Logger logger = LoggerFactory.getLogger(DocumentAtATime.class);
 	
-	public DocumentAtATime(List<String> queryTerms, Lexicon[] lexicons, int resultCount, BM25 bm25)
+	public DocumentAtATime(String[] queryTerms, Lexicon[] lexicons, int resultCount, BM25 bm25)
 	{
 		this.queryTerms = queryTerms;
 		this.lexicons = lexicons;
 		this.filePointerMap = new HashMap<>();
 		this.postingObjectMap = new HashMap<>();
-		this.termLexicons = new Lexicon[queryTerms.size()];
+		this.termLexicons = new Lexicon[queryTerms.length];
 		this.resultCount = resultCount;
 		this.priorityQueue = new PriorityQueue<>();
 		this.bm25 = bm25;
@@ -113,11 +112,11 @@ public class DocumentAtATime
 		return postingObject;
 	}
 	
-	public void getConjunctionResult()
+	public Queue<ResultObject> getConjunctionResult()
 	{
-		for(int i=0;i<this.queryTerms.size();i++)
+		for(int i=0;i<this.queryTerms.length;i++)
 		{
-			this.openList(queryTerms.get(i), 0);
+			this.openList(queryTerms[i], 0);
 		}
 		Arrays.sort(this.termLexicons, new Comparator<Lexicon>()
 		{
@@ -162,5 +161,6 @@ public class DocumentAtATime
 				
 		}
 		CloseUtil.close(this.randomAccessFile);
+		return priorityQueue;
 	}
 }

@@ -17,10 +17,10 @@ public class BM25
 	private final static double k1 = 1.2;
 	private final static double b = 0.75;
 	
-	private int N;
+	private long N;
 	private double dAvg; //avg length of documents in the collection;
 	
-	public BM25(int N, double dAvg)
+	public BM25(long N, double dAvg)
 	{
 		this.N = N;
 		this.dAvg = dAvg;
