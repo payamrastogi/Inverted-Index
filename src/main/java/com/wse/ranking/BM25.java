@@ -36,5 +36,4 @@ public class BM25
 		score = Math.log(X * Y);
 		return score;
 	}
-
 }

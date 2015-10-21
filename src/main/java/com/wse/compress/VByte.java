@@ -11,16 +11,19 @@ import org.slf4j.LoggerFactory;
 public class VByte 
 {
 	private final Logger logger = LoggerFactory.getLogger(VByte.class);
-	public void encode(long number, OutputStream out) throws IOException
+	public int encode(long number, OutputStream out) throws IOException
 	{
+		int count = 0;
 		if(number < 0)
 			throw new IllegalArgumentException("only encode positive numbers in vbyte");
 		while(number > 127)
 		{
-			out.write((int)(number & 127));
+			out.write((byte)(number & 127));
 			number >>>= 7;
+			++count;
 		}
-		out.write((int)(number | 0x80));
+		out.write((byte)(number | 0x80));
+		return ++count;
 	}
 	
 	public long decode(RandomAccessFile randomAccessFile, long filePointer)
