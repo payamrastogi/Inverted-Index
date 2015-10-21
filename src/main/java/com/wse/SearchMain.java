@@ -1,9 +1,12 @@
 package com.wse;
 
 import java.io.File;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Scanner;
 
+import com.wse.io.DocumentReader;
+import com.wse.model.DocumentObject;
 import com.wse.model.Lexicon;
 import com.wse.model.MetaObject;
 import com.wse.model.ResultObject;
@@ -23,6 +26,8 @@ public class SearchMain
 	private KryoSerializer kryoSerializer;
 	private MetaObject metaObject;
 	private Queue<ResultObject> roQueue;
+	private DocumentReader documentReader;
+	private Map<Long, DocumentObject> documentObjectMap;
 	
 	private static final String configPropPath = "src/main/resources/config.properties";
 	private static final int resultCount=10;
@@ -33,7 +38,8 @@ public class SearchMain
 		this.metaObject = this.kryoSerializer.deserialize();
 		this.lexicons = this.fileReader.getLexicons();
 		this.bm25 = new BM25(this.metaObject.getTotalDocuments(), this.metaObject.getAverageLengthOfDocuments());
-		
+		this.documentReader = new DocumentReader(this.config.getOutputFilePath());
+		this.documentObjectMap = this.documentReader.getDocumentObjectMap();
 	}
 	
 	public void getSearchResults(String searchQuery)
@@ -41,7 +47,8 @@ public class SearchMain
 		String[] searchTerms = searchQuery.split("\\s");
 		this.daat = new DocumentAtATime(searchTerms, this.lexicons, resultCount, this.bm25);
 		roQueue = this.daat.getConjunctionResult();
-		
+		//ToDo: get Document URL from documentObjectMap 
+		// and display the result
 	}
 	
 	public static void main()
