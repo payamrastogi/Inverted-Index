@@ -19,6 +19,7 @@ import com.wse.model.Lexicon;
 import com.wse.model.PostingObject;
 import com.wse.model.ResultObject;
 import com.wse.ranking.BM25;
+import com.wse.util.CloseUtil;
 
 public class DocumentAtATime 
 {
@@ -156,8 +157,10 @@ public class DocumentAtATime
 							postingObjectMap.get(termLexicons[i].getWord()).getFrequency(), 12345) + ro.getBm25Score());
 				}
 				priorityQueue.add(ro);
+				po.setDocumentId(po.getDocumentId() + 1);
 			}
 				
 		}
+		CloseUtil.close(this.randomAccessFile);
 	}
 }

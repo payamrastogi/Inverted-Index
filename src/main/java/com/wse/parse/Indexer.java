@@ -10,6 +10,7 @@ import java.util.concurrent.BlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.wse.compress.VByte;
 import com.wse.util.ElapsedTime;
 
 // to index sorted files
@@ -17,11 +18,13 @@ public class Indexer {
 	private final Logger logger = LoggerFactory.getLogger(Indexer.class);
 	private BlockingQueue<String> toMergeQueue1;
 	private BlockingQueue<String> toMergeQueue2;
+	private BlockingQueue<String> lexiconQueue;
 
 	public Indexer(BlockingQueue<String> toMergeQueue1,
 			BlockingQueue<String> toMergeQueue2) {
 		this.toMergeQueue1 = toMergeQueue1;
 		this.toMergeQueue2 = toMergeQueue2;
+		this.lexiconQueue = new ArrayBlockingQueue<>(100000);
 	}
 
 	public void index(String inputFilePath, String outputFilePath) {
@@ -185,6 +188,122 @@ public class Indexer {
 			}
 			sb.append("\n");
 			outputStream.write(sb.toString().getBytes());
+		}
+		catch (IOException e) 
+		{
+			logger.error(
+					inputFilePath + " : " + lineCount + " : " + e.getMessage(),
+					e);
+		} 
+		catch (Exception e) 
+		{
+			logger.error(
+					inputFilePath + " : " + lineCount + " : " + e.getMessage(),
+					e);
+		} 
+		finally
+		{
+			try 
+			{
+				inputStream.close();
+				outputStream.close();
+				//new ProcessBuilder("/bin/bash", "-c","rm "+ inputFilePath).start();
+				logger.debug("Total time: "+elapsedTime.getTotalTimeInSeconds()+" seconds");
+			} 
+			catch (Exception e) 
+			{
+				logger.error(
+						inputFilePath + ":" + lineCount + ":" + e.getMessage(),
+						e);
+			}
+		}
+	}
+	
+	public void createFinalIndexVByte(String inputFilePath, String outputFilePath)
+	{
+		ElapsedTime elapsedTime = new ElapsedTime();
+		int lineCount = 0;
+		long byteCount = 0;
+		long postingListLength = 0;
+		long postingListStart = 0;
+		long postingListEnd = 0;
+		FileInputStream inputStream=null;
+		FileOutputStream outputStream=null;
+		VByte vByte = new VByte();
+		Scanner sc=null;
+		try 
+		{
+			inputStream = new FileInputStream(inputFilePath);
+			sc = new Scanner(inputStream, "UTF-8");
+			outputStream = new FileOutputStream(outputFilePath);
+
+			StringBuilder sb = null;
+			String prevWord = null;
+			while (sc.hasNextLine()) 
+			{
+
+				String line = sc.nextLine();
+				if(line==null || line.isEmpty())
+					continue;
+				String[] chunk = line.split("\t");
+				if (chunk == null || chunk.length == 0 || chunk.length < 2)
+				{
+					continue;
+				}
+				if (chunk[0] == null || chunk[0].trim().isEmpty() || chunk[0].length()>45)
+				{
+					continue;
+				}
+				if(prevWord==null)
+				{
+					byte[] b = chunk[0].getBytes();
+					outputStream.write(b);
+					byteCount+=b.length;
+					postingListStart = byteCount;
+					String[] d = chunk[1].split(":");
+					byteCount+=vByte.encode(Long.parseLong(d[0]), outputStream);
+					byteCount+=vByte.encode(Long.parseLong(d[1]), outputStream);
+					prevWord = chunk[0];
+					postingListLength++;
+					sb.append(chunk[0]);
+					continue;
+				}
+				if(prevWord.equals(chunk[0]))
+				{
+					String[] d = chunk[1].split(":");
+					byteCount+=vByte.encode(Long.parseLong(d[0]), outputStream);
+					byteCount+=vByte.encode(Long.parseLong(d[1]), outputStream);
+					prevWord = chunk[0];
+					postingListLength++;
+					continue;
+				}
+				postingListEnd = byteCount;
+				sb.append("\t").append(postingListStart)
+				.append("\t").append(postingListStart)
+				.append("\t").append(postingListEnd)
+				.append("\t").append(postingListLength);
+				lexiconQueue.add(sb.toString());
+				sb = new StringBuilder();
+				
+				byte[] b = chunk[0].getBytes();
+				outputStream.write(b);
+				byteCount+=b.length;
+				postingListStart = byteCount;
+				String[] d = chunk[1].split(":");
+				byteCount+=vByte.encode(Long.parseLong(d[0]), outputStream);
+				byteCount+=vByte.encode(Long.parseLong(d[1]), outputStream);
+				postingListLength = 1;
+				sb.append("\n").append(chunk[0]);
+				prevWord = chunk[0];
+				if(++lineCount%100000==0)
+					logger.debug("Done:"+lineCount+ " Total time: "+elapsedTime.getTotalTimeInSeconds()+" seconds");
+			}
+			postingListEnd = byteCount;
+			sb.append("\t").append(postingListStart)
+			.append("\t").append(postingListStart)
+			.append("\t").append(postingListEnd)
+			.append("\t").append(postingListLength);
+			lexiconQueue.add(sb.toString());
 		}
 		catch (IOException e) 
 		{
