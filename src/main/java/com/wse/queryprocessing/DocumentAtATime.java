@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.wse.compress.VByte;
+import com.wse.model.DocumentObject;
 import com.wse.model.Lexicon;
 import com.wse.model.PostingObject;
 import com.wse.model.ResultObject;
@@ -32,10 +33,12 @@ public class DocumentAtATime
 	private Queue<ResultObject> priorityQueue;
 	private RandomAccessFile randomAccessFile;
 	private Map<String, PostingObject> postingObjectMap;
+	private Map<Long, DocumentObject> documentObjectMap;
 	
 	private final Logger logger = LoggerFactory.getLogger(DocumentAtATime.class);
 	
-	public DocumentAtATime(String[] queryTerms, Lexicon[] lexicons, int resultCount, BM25 bm25)
+	public DocumentAtATime(String[] queryTerms, Lexicon[] lexicons, int resultCount, BM25 bm25,
+			Map<Long, DocumentObject> documentObjectMap)
 	{
 		this.queryTerms = queryTerms;
 		this.lexicons = lexicons;
@@ -45,6 +48,7 @@ public class DocumentAtATime
 		this.resultCount = resultCount;
 		this.priorityQueue = new PriorityQueue<>();
 		this.bm25 = bm25;
+		this.documentObjectMap = documentObjectMap;
 		for(String term:queryTerms)
 		{
 			postingObjectMap.put(term, new PostingObject(0, 0));
@@ -150,10 +154,9 @@ public class DocumentAtATime
 				ResultObject ro = new ResultObject(po.getDocumentId());
 				for(int i=0;i<termLexicons.length;i++)
 				{
-					//ToDo: getDocument Length from the list of documentId, url and document length
-					// replace 12345
+					long documentLength = documentObjectMap.get(po.getDocumentId()).getDocumentLength(); 
 					ro.setBm25Score(bm25.getScore(termLexicons[i].getPostingListLength(), 
-							postingObjectMap.get(termLexicons[i].getWord()).getFrequency(), 12345) + ro.getBm25Score());
+							postingObjectMap.get(termLexicons[i].getWord()).getFrequency(), documentLength) + ro.getBm25Score());
 				}
 				priorityQueue.add(ro);
 				po.setDocumentId(po.getDocumentId() + 1);
