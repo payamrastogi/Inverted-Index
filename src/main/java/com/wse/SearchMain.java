@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 import com.wse.io.DocumentReader;
 import com.wse.model.DocumentObject;
-import com.wse.model.Lexicon;
+import com.wse.model.LexiconObject;
 import com.wse.model.MetaObject;
 import com.wse.model.ResultObject;
 import com.wse.queryprocessing.DocumentAtATime;
@@ -22,7 +22,7 @@ public class SearchMain
 	private DocumentAtATime daat;
 	private BM25 bm25;
 	private FileReader fileReader;
-	private Lexicon[] lexicons;
+	private LexiconObject[] lexicons;
 	private KryoSerializer kryoSerializer;
 	private MetaObject metaObject;
 	private Queue<ResultObject> roQueue;

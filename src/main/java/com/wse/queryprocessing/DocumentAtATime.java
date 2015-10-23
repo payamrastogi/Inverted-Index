@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import com.wse.compress.VByte;
 import com.wse.model.DocumentObject;
-import com.wse.model.Lexicon;
+import com.wse.model.LexiconObject;
 import com.wse.model.PostingObject;
 import com.wse.model.ResultObject;
 import com.wse.ranking.BM25;
@@ -25,8 +25,8 @@ public class DocumentAtATime
 {
 	private BM25 bm25;
 	private int resultCount;
-	private Lexicon[] lexicons;
-	private Lexicon[] termLexicons;
+	private LexiconObject[] lexicons;
+	private LexiconObject[] termLexicons;
 	private String[] queryTerms;
 	private String invertedIndexFilePath;
 	private Map<String, Long> filePointerMap;
@@ -37,14 +37,14 @@ public class DocumentAtATime
 	
 	private final Logger logger = LoggerFactory.getLogger(DocumentAtATime.class);
 	
-	public DocumentAtATime(String[] queryTerms, Lexicon[] lexicons, int resultCount, BM25 bm25,
+	public DocumentAtATime(String[] queryTerms, LexiconObject[] lexicons, int resultCount, BM25 bm25,
 			Map<Long, DocumentObject> documentObjectMap)
 	{
 		this.queryTerms = queryTerms;
 		this.lexicons = lexicons;
 		this.filePointerMap = new HashMap<>();
 		this.postingObjectMap = new HashMap<>();
-		this.termLexicons = new Lexicon[queryTerms.length];
+		this.termLexicons = new LexiconObject[queryTerms.length];
 		this.resultCount = resultCount;
 		this.priorityQueue = new PriorityQueue<>();
 		this.bm25 = bm25;
@@ -66,9 +66,9 @@ public class DocumentAtATime
 	public void openList(String queryTerm, int addAtIndex)
 	{
 		long filePointer = -1; 
-		Lexicon q = new Lexicon(queryTerm, 0, 0, 0);
-		int index = Arrays.binarySearch(lexicons, q, new Lexicon("", 0, 0, 0));
-		Lexicon lexicon = lexicons[index];
+		LexiconObject q = new LexiconObject(queryTerm, 0, 0, 0);
+		int index = Arrays.binarySearch(lexicons, q, new LexiconObject("", 0, 0, 0));
+		LexiconObject lexicon = lexicons[index];
 		this.termLexicons[addAtIndex] = lexicons[index];
 		try
 		{
@@ -122,10 +122,10 @@ public class DocumentAtATime
 		{
 			this.openList(queryTerms[i], 0);
 		}
-		Arrays.sort(this.termLexicons, new Comparator<Lexicon>()
+		Arrays.sort(this.termLexicons, new Comparator<LexiconObject>()
 		{
 			@Override
-			public int compare(Lexicon l1, Lexicon l2) 
+			public int compare(LexiconObject l1, LexiconObject l2) 
 			{
 				return l1.getPostingListLength()-l2.getPostingListLength();
 			}
