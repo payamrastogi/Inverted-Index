@@ -13,6 +13,7 @@ public class Config
 	private String outputfilePath;
 	private String sortCommand;
 	private String mergeCommand;
+	private String dataType;
 	
 	public Config(File configFile) 
 	{
@@ -44,6 +45,7 @@ public class Config
 		this.outputfilePath=prop.getProperty("outputFilePath");
 		this.sortCommand = prop.getProperty("sortCommand");
 		this.mergeCommand = prop.getProperty("mergeCommand");
+		this.dataType = prop.getProperty("dataType");
 	}
 	
 	private static Properties loadProperties(InputStream is) 
@@ -81,5 +83,9 @@ public class Config
 
 	public String getMergeCommand() {
 		return mergeCommand;
+	}
+	
+	public String getDataType(){
+		return this.dataType;
 	}
 }
