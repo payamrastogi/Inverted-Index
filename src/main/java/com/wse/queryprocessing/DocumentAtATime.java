@@ -25,10 +25,10 @@ public class DocumentAtATime
 {
 	private BM25 bm25;
 	private int resultCount;
-	private LexiconObject[] lexicons;
+	private Map<String, LexiconObject> lexiconObjectMap;
 	private LexiconObject[] termLexicons;
 	private String[] queryTerms;
-	private String invertedIndexFilePath;
+	private String invertedIndexFilePath="/home/jenil/Downloads/indexer/output/m_0i";
 	private Map<String, Long> filePointerMap;
 	private Queue<ResultObject> priorityQueue;
 	private RandomAccessFile randomAccessFile;
@@ -37,11 +37,11 @@ public class DocumentAtATime
 	
 	private final Logger logger = LoggerFactory.getLogger(DocumentAtATime.class);
 	
-	public DocumentAtATime(String[] queryTerms, LexiconObject[] lexicons, int resultCount, BM25 bm25,
+	public DocumentAtATime(String[] queryTerms, Map<String, LexiconObject> lexiconObjectMap, int resultCount, BM25 bm25,
 			Map<Long, DocumentObject> documentObjectMap)
 	{
 		this.queryTerms = queryTerms;
-		this.lexicons = lexicons;
+		this.lexiconObjectMap = lexiconObjectMap;
 		this.filePointerMap = new HashMap<>();
 		this.postingObjectMap = new HashMap<>();
 		this.termLexicons = new LexiconObject[queryTerms.length];
@@ -66,10 +66,8 @@ public class DocumentAtATime
 	public void openList(String queryTerm, int addAtIndex)
 	{
 		long filePointer = -1; 
-		LexiconObject q = new LexiconObject(queryTerm, 0, 0, 0);
-		int index = Arrays.binarySearch(lexicons, q, new LexiconObject("", 0, 0, 0));
-		LexiconObject lexicon = lexicons[index];
-		this.termLexicons[addAtIndex] = lexicons[index];
+		LexiconObject lexicon = lexiconObjectMap.get(queryTerm);
+		this.termLexicons[addAtIndex] = lexicon;
 		try
 		{
 			this.randomAccessFile.seek(lexicon.getPostingListStart());
@@ -85,7 +83,7 @@ public class DocumentAtATime
 	public PostingObject nextGEQ(String term, long filePointer, long documentId)
 	{
 		PostingObject postingObject = this.getDocumentId(term, filePointer);
-		while(postingObject.getDocumentId() < documentId)
+		while(postingObject!=null && postingObject.getDocumentId() < documentId)
 		{
 			postingObject = this.getDocumentId(term, filePointerMap.get(term));
 		}
@@ -98,15 +96,19 @@ public class DocumentAtATime
 		long docId = -1;
 		long freq = -1;
 		PostingObject postingObject = null;
+		if (filePointer >= lexiconObjectMap.get(term).getPostingListEnd())
+			return null;
 		try
 		{
 			VByte vByte = new VByte();
 			docId = vByte.decode(this.randomAccessFile, filePointer);
 			freq = vByte.decode(randomAccessFile, randomAccessFile.getFilePointer());
 			postingObject = postingObjectMap.get(term);
+			logger.debug("-->"+docId + " " +postingObject.getDocumentId()+" "+(postingObject.getDocumentId()+docId) +" "+term);
 			docId += postingObject.getDocumentId();
+			//logger.debug("-->"+docId + " " + term);
 			postingObject = new PostingObject(docId, freq);
-			postingObjectMap.put(term, postingObject);
+			postingObjectMap.put(term, new PostingObject(docId, freq));
 			filePointerMap.put(term, randomAccessFile.getFilePointer());
 		}
 		catch(IOException e)
@@ -120,7 +122,7 @@ public class DocumentAtATime
 	{
 		for(int i=0;i<this.queryTerms.length;i++)
 		{
-			this.openList(queryTerms[i], 0);
+			this.openList(queryTerms[i], i);
 		}
 		Arrays.sort(this.termLexicons, new Comparator<LexiconObject>()
 		{
@@ -134,19 +136,28 @@ public class DocumentAtATime
 		int count = 0;
 		boolean flagEndOfList =  false;
 		PostingObject po = new PostingObject(0,0);
-		while(count < resultCount && flagEndOfList==false)
+		while(flagEndOfList==false)
 		{
 			/* get next post from shortest list */
+			logger.debug(priorityQueue.toString());
 			String term = termLexicons[0].getWord();
 			po = nextGEQ(term, filePointerMap.get(term), po.getDocumentId());
+			if (po==null)
+				break;
 			//ToDo: check endOfList reached break the while loop
 			/* see if you find entries with same docID in other lists */
 			PostingObject d = null;
+			try {
 			for (int i=1;
 					 (i<termLexicons.length) && 
 					 	((d=nextGEQ(termLexicons[i].getWord(), 
 					 			filePointerMap.get(termLexicons[i].getWord()), 
 					 				po.getDocumentId()))).getDocumentId() == po.getDocumentId(); i++);
+			} catch (Exception ex) {
+				logger.error(ex.getMessage());
+			}
+			if (d==null)
+				break;
 			if(d.getDocumentId()> po.getDocumentId())
 				po.setDocumentId(d.getDocumentId());
 			else

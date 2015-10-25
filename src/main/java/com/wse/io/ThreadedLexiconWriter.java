@@ -32,15 +32,16 @@ public class ThreadedLexiconWriter implements Runnable
 		try
 		{
 			this.writer = new FileWriter(new File(filePath, "lexicon"));
-			for(int i=0;i<30;i++)
+			for(int i=0;i<500;i++)
 			{
+				logger.debug("Threaded Lexicon Writer Enter");
 				try
 				{
 					String text = null;
 					while((text=lexiconQueue.poll(10, TimeUnit.SECONDS))!=null)
 					{
 						writer.write(text);
-						if (++count % 25000 ==0) 
+						if (++count % 1000 ==0) 
 						{
 							logger.debug(" Tota Time: "+ elapsedTime.getTotalTimeInSeconds()+" seconds");
 							logger.debug("lexiconQueue: "+lexiconQueue.size());

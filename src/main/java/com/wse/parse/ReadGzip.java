@@ -29,12 +29,10 @@ public class ReadGzip
 	private long totalDocuments;
 	private double averageLengthOfDocuments;
 	
-	public ReadGzip(BlockingQueue<ParsedObject> parsedObjectQueue, BlockingQueue<String> documentQueue, long totalDocuments, double averageLengthOfDocuments)
+	public ReadGzip(BlockingQueue<ParsedObject> parsedObjectQueue, BlockingQueue<String> documentQueue)
 	{
 		this.parsedObjectQueue = parsedObjectQueue;
 		this.documentQueue = documentQueue;
-		this.totalDocuments = totalDocuments;
-		this.averageLengthOfDocuments = averageLengthOfDocuments;
 	}
 	
 	public void read(File file) throws InterruptedException
@@ -74,7 +72,7 @@ public class ReadGzip
 								continue;
 							}
 							this.parsedObjectQueue.add(new ParsedObject(volumeId, documentId, sb));
-							this.documentQueue.add(documentId + "\t"+ dataFile.getAbsolutePath() + "\t"+ this.size);
+							this.documentQueue.add(documentId + "\t"+ dataFile.getAbsolutePath() + "\t"+ this.size+"\n");
 							if(++this.totalDocuments%10000==0)
 								logger.debug("Done: "+ totalDocuments+" Total Time: "+elapsedTime.getTotalTimeInSeconds()+" seconds");
 						}
@@ -92,6 +90,14 @@ public class ReadGzip
 			logger.error(e.getMessage(), e);
 			e.printStackTrace();
 		}
+	}
+	
+	public long getTotalDocuments() {
+		return totalDocuments;
+	}
+
+	public double getAverageLengthOfDocuments() {
+		return averageLengthOfDocuments;
 	}
 }	
 

@@ -54,16 +54,13 @@ public class Main
 	private BlockingQueue<String> documentQueue;
 	private BlockingQueue<String> lexiconQueue;
 	
-	private long totalDocuments;
-	private double averageLengthOfDocuments;
-	
 	private Set<String> stopWords;
 	
 	private Config config;
 	private ExecuteCommand executeCommand;
 	private ReadGzip readGzip;
 	private ParsedObjectWriter[] writers = new ParsedObjectWriter[5];
-	private DocumentWriter documentWriter;
+	//private DocumentWriter documentWriter;
 	private FileReader fileReader;
 	private UnixSort unixSort;
 	private UnixMerge unixMerge;
@@ -72,7 +69,6 @@ public class Main
 	private AtomicBoolean flag2;
 	private AtomicBoolean flagReadGzip;
 	private AtomicInteger flagWriter;
-	private Integer lexiconCount;
 	private MetaObject metaObject;
 	private static final int writerThreads = 2;
 	
@@ -91,20 +87,20 @@ public class Main
 		this.toIndexQueue = new ArrayBlockingQueue<>(200);
 		this.toMergeQueue1 = new ArrayBlockingQueue<>(200);
 		this.toMergeQueue2 = new ArrayBlockingQueue<>(200);
-		this.lexiconQueue = new ArrayBlockingQueue<>(10000);
+		this.lexiconQueue = new ArrayBlockingQueue<>(100000);
 		this.flag1 = new AtomicBoolean(true);
 		this.flag2 = new AtomicBoolean(true);
 		this.flagReadGzip = new AtomicBoolean(true);
 		this.flagWriter = new AtomicInteger(writerThreads);
 		this.executeCommand = new ExecuteCommand(this.config.getFindCommand(), pathQueue);
-		this.readGzip = new ReadGzip(this.parsedObjectQueue, this.documentQueue, this.totalDocuments, this.averageLengthOfDocuments);
+		this.readGzip = new ReadGzip(this.parsedObjectQueue, this.documentQueue);
 		this.unixSort = new UnixSort(this.config.getSortCommand(), this.toIndexQueue);
 		this.indexer = new Indexer(this.toMergeQueue1, this.toMergeQueue2, this.lexiconQueue);
 		this.unixMerge = new UnixMerge(this.config.getMergeCommand(), this.config.getOutputFilePath());
 		char ch = 'a' ;
 		for (int i =0 ;i<writerThreads ;i++) 
 			this.writers[i] = new ParsedObjectWriter(this.config.getOutputFilePath(),ch++, this.stopWords, this.toSortQueue);
-		this.documentWriter = new DocumentWriter(this.config.getOutputFilePath());
+		//this.documentWriter = new DocumentWriter(this.config.getOutputFilePath());
 	}
 	
 	public static void main(String args[]) throws Exception
@@ -132,23 +128,30 @@ public class Main
 			// write parsed object to file
 			for (int i =0 ;i<writerThreads ;i++)
 				executor.submit(new ThreadedParsedObjectWriter(this.writers[i], this.parsedObjectQueue, this.flagWriter));
-			executor.submit(new ThreadedDocumentWriter(this.documentWriter, this.documentQueue));
+			executor.submit(new ThreadedDocumentWriter(this.config.getOutputFilePath(), this.documentQueue));
 			// sort parsed file using unix sort
 			executor.submit(new ThreadedUnixSort(this.unixSort, this.toSortQueue));
 			executor.submit(new ThreadedIndexer(this.indexer, this.toIndexQueue, this.flag1, this.flagReadGzip));
 			executor.submit(new ThreadedIndexer(this.indexer, this.toIndexQueue, this.flag2, this.flagReadGzip));
 			// merge sorted files
 			executor.submit(new ThreadedUnixMerge(this.unixMerge, this.toMergeQueue1, this.toMergeQueue2, this.flag1, this.flag2));
-			executor.submit(new ThreadedLexiconWriter(this.lexiconQueue, this.config.getOutputFilePath(), this.lexiconCount));
+			//executor.submit(new ThreadedLexiconWriter(this.lexiconQueue, this.config.getOutputFilePath(), this.lexiconCount));
 			executor.shutdownNow();
 		    executor.awaitTermination(5000, TimeUnit.SECONDS);
 		    
+		   /* ExecutorService executor1 = Executors.newCachedThreadPool();	
+		    executor1.submit(new ThreadedLexiconWriter(this.lexiconQueue, this.config.getOutputFilePath(), this.lexiconCount));
+		    */
 		    //create final index
 		    String inputFilePath = toMergeQueue1.isEmpty()?toMergeQueue2.poll():toMergeQueue1.poll();
-		    indexer.createFinalIndex(inputFilePath, inputFilePath+"i");
+		    indexer.createFinalIndexVByte(inputFilePath, inputFilePath+"i");
+		    
+		   
+		   /* executor1.shutdownNow();
+		    executor1.awaitTermination(5000, TimeUnit.SECONDS);*/
 		    
 		    KryoSerializer kryoSerializer = new KryoSerializer();
-		    this.metaObject = new MetaObject(this.totalDocuments, this.averageLengthOfDocuments);
+		    this.metaObject = new MetaObject(this.readGzip.getTotalDocuments(), this.readGzip.getAverageLengthOfDocuments());
 		    kryoSerializer.serialize(metaObject);
 			logger.debug(pathQueue.size()+"");
 			logger.debug(parsedObjectQueue.size()+"");

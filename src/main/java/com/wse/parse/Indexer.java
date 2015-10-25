@@ -1,7 +1,9 @@
 package com.wse.parse;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -69,7 +71,7 @@ public class Indexer {
 					prevWord = word;
 					prevDocumentId = documentId;
 					sb.append(word).append("\t").append(documentId)
-							.append(":");
+							.append("\t");
 					count = 0;
 				}
 				if (prevWord.equalsIgnoreCase(word)) 
@@ -86,7 +88,7 @@ public class Indexer {
 				sb = new StringBuilder();
 				prevWord = word;
 				sb = new StringBuilder(word).append("\t")
-						.append(documentId).append(":");
+						.append(documentId).append("\t");
 				prevDocumentId = documentId;
 				count = 1;
 
@@ -223,12 +225,14 @@ public class Indexer {
 	{
 		ElapsedTime elapsedTime = new ElapsedTime();
 		int lineCount = 0;
+		long prevDocumentId = 0;
 		long byteCount = 0;
 		long postingListLength = 0;
 		long postingListStart = 0;
 		long postingListEnd = 0;
 		FileInputStream inputStream=null;
 		FileOutputStream outputStream=null;
+		FileWriter writer=null;
 		VByte vByte = new VByte();
 		Scanner sc=null;
 		try 
@@ -236,6 +240,7 @@ public class Indexer {
 			inputStream = new FileInputStream(inputFilePath);
 			sc = new Scanner(inputStream, "UTF-8");
 			outputStream = new FileOutputStream(outputFilePath);
+			writer = new FileWriter(new File(inputFilePath+"_lexicon"));
 
 			StringBuilder sb = null;
 			String prevWord = null;
@@ -260,38 +265,39 @@ public class Indexer {
 					outputStream.write(b);
 					byteCount+=b.length;
 					postingListStart = byteCount;
-					String[] d = chunk[1].split(":");
-					byteCount+=vByte.encode(Long.parseLong(d[0]), outputStream);
-					byteCount+=vByte.encode(Long.parseLong(d[1]), outputStream);
+					prevDocumentId = Long.parseLong(chunk[1]);
+					byteCount+=vByte.encode(Long.parseLong(chunk[1]), outputStream);
+					byteCount+=vByte.encode(Long.parseLong(chunk[2]), outputStream);
 					prevWord = chunk[0];
 					postingListLength++;
+					sb = new StringBuilder();
 					sb.append(chunk[0]);
 					continue;
 				}
 				if(prevWord.equals(chunk[0]))
 				{
-					String[] d = chunk[1].split(":");
-					byteCount+=vByte.encode(Long.parseLong(d[0]), outputStream);
-					byteCount+=vByte.encode(Long.parseLong(d[1]), outputStream);
+					//logger.debug(prevWord +" "+Long.parseLong(chunk[1])+" "+ +prevDocumentId +" "+ (Long.parseLong(chunk[1])-prevDocumentId));
+					byteCount+=vByte.encode(Long.parseLong(chunk[1])-prevDocumentId, outputStream);
+					byteCount+=vByte.encode(Long.parseLong(chunk[2]), outputStream);
 					prevWord = chunk[0];
 					postingListLength++;
+					prevDocumentId = Long.parseLong(chunk[1]);
 					continue;
 				}
 				postingListEnd = byteCount;
 				sb.append("\t").append(postingListStart)
-				.append("\t").append(postingListStart)
 				.append("\t").append(postingListEnd)
 				.append("\t").append(postingListLength);
-				lexiconQueue.add(sb.toString());
+				writer.write(sb.toString());
 				sb = new StringBuilder();
 				
 				byte[] b = chunk[0].getBytes();
 				outputStream.write(b);
 				byteCount+=b.length;
 				postingListStart = byteCount;
-				String[] d = chunk[1].split(":");
-				byteCount+=vByte.encode(Long.parseLong(d[0]), outputStream);
-				byteCount+=vByte.encode(Long.parseLong(d[1]), outputStream);
+				byteCount+=vByte.encode(Long.parseLong(chunk[1]), outputStream);
+				byteCount+=vByte.encode(Long.parseLong(chunk[2]), outputStream);
+				prevDocumentId = Long.parseLong(chunk[1]);
 				postingListLength = 1;
 				sb.append("\n").append(chunk[0]);
 				prevWord = chunk[0];
@@ -300,10 +306,9 @@ public class Indexer {
 			}
 			postingListEnd = byteCount;
 			sb.append("\t").append(postingListStart)
-			.append("\t").append(postingListStart)
 			.append("\t").append(postingListEnd)
 			.append("\t").append(postingListLength);
-			lexiconQueue.add(sb.toString());
+			writer.write(sb.toString());
 		}
 		catch (IOException e) 
 		{
@@ -323,6 +328,7 @@ public class Indexer {
 			{
 				inputStream.close();
 				outputStream.close();
+				writer.close();
 				//new ProcessBuilder("/bin/bash", "-c","rm "+ inputFilePath).start();
 				logger.debug("Total time: "+elapsedTime.getTotalTimeInSeconds()+" seconds");
 			} 
@@ -339,6 +345,6 @@ public class Indexer {
 	{
 		BlockingQueue<String> merge  = new ArrayBlockingQueue<>(1);
 		Indexer indexer = new Indexer(merge, merge, merge);
-		indexer.createFinalIndex("/Users/payamrastogi/Dropbox/workspace/indexer/output/m_102", "/Users/payamrastogi/Dropbox/workspace/indexer/output/m_102_final");
+		indexer.createFinalIndexVByte("/home/jenil/Downloads/indexer/output/m_0", "/home/jenil/Downloads/indexer/output/m_0_final");
 	}
 }

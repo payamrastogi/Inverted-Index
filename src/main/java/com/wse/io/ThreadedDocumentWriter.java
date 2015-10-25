@@ -1,5 +1,8 @@
 package com.wse.io;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -13,17 +16,18 @@ public class ThreadedDocumentWriter implements Runnable
 	private final Logger logger = LoggerFactory.getLogger(ThreadedParsedObjectWriter.class);
 	private BlockingQueue<String> documentQueue;
 	private int count=0;
-	private DocumentWriter writer;
+	private String filePath;
 	
-	public ThreadedDocumentWriter(DocumentWriter writer, BlockingQueue<String> documentQueue)
+	public ThreadedDocumentWriter(String filePath, BlockingQueue<String> documentQueue)
 	{
-		this.writer = writer;
+		this.filePath = filePath+"/document";
 		this.documentQueue = documentQueue;
 	}
 	
 	public void run()
 	{
 		ElapsedTime elapsedTime = new ElapsedTime();
+		try(FileWriter writer = new FileWriter(new File(filePath))) {
 		for(int i=0;i<30;i++)
 		{
 			try
@@ -44,6 +48,10 @@ public class ThreadedDocumentWriter implements Runnable
 			{
 				logger.error("InterruptedException: "+ e);
 			}
+		}
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 	}
 }
