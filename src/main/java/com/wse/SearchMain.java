@@ -22,13 +22,13 @@ public class SearchMain
 	private Config config;
 	private DocumentAtATime daat;
 	private BM25 bm25;
-	private LexiconReader lexiconReader;
-	private Map<String, LexiconObject> lexiconObjectMap;
 	private KryoSerializer kryoSerializer;
 	private MetaObject metaObject;
 	private Queue<ResultObject> roQueue;
 	private DocumentReader documentReader;
 	private Map<Long, DocumentObject> documentObjectMap;
+	private Map<String, LexiconObject> lexiconObjectMap;
+	private LexiconReader lexiconReader;
 	
 	private static final String configPropPath = "src/main/resources/config.properties";
 	private static final int resultCount=10;
@@ -39,7 +39,7 @@ public class SearchMain
 		this.lexiconReader = new LexiconReader(this.config.getOutputFilePath(), lexiconObjectMap);
 		this.kryoSerializer = new KryoSerializer();
 		this.metaObject = this.kryoSerializer.deserialize();
-		this.lexiconObjectMap = this.lexiconReader.getLexiconObjectMap();
+		
 		this.bm25 = new BM25(this.metaObject.getTotalDocuments(), this.metaObject.getAverageLengthOfDocuments());
 		this.documentReader = new DocumentReader(this.config.getOutputFilePath());
 		this.documentObjectMap = this.documentReader.getDocumentObjectMap();

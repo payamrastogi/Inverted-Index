@@ -26,9 +26,10 @@ public class LexiconReader
 	{
 		this.filePath = filePath;
 		this.lexiconObjectMap = lexiconObjectMap;
+		getLexiconObjectMap();
 	}
 	
-	public Map<String, LexiconObject> getLexiconObjectMap()
+	public void getLexiconObjectMap()
 	{
 		try(BufferedReader br = new BufferedReader(new java.io.FileReader(this.filePath+ "/lexicon")))
 		{
@@ -51,7 +52,6 @@ public class LexiconReader
 		{
 			logger.error(e.getMessage(), e);
 		}
-		return lexiconObjectMap;
 	}
 	
 	public static void main(String[] args) {

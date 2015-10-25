@@ -13,11 +13,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.wse.io.ThreadedParsedObjectWriter;
-import com.wse.io.DocumentWriter;
 import com.wse.io.ParsedObjectWriter;
 import com.wse.io.ThreadedDocumentWriter;
-import com.wse.io.ThreadedLexiconWriter;
+import com.wse.io.ThreadedParsedObjectWriter;
 import com.wse.model.MetaObject;
 import com.wse.model.ParsedObject;
 import com.wse.parse.Indexer;
@@ -70,6 +68,7 @@ public class Main
 	private AtomicBoolean flagReadGzip;
 	private AtomicInteger flagWriter;
 	private MetaObject metaObject;
+	private String dataType;
 	private static final int writerThreads = 2;
 	
 	private Logger logger = LoggerFactory.getLogger(Main.class);
@@ -79,7 +78,7 @@ public class Main
 		this.config = new Config(new File(configPropPath));
 		this.fileReader = new FileReader(this.config.getStopWordsFilePath());
 		this.stopWords = this.fileReader.getStopWords();
-		
+		this.dataType = this.config.getDataType();
 		this.pathQueue = new ArrayBlockingQueue<>(5000);
 		this.parsedObjectQueue = new ArrayBlockingQueue<>(100000);
 		this.documentQueue = new ArrayBlockingQueue<>(100000);
@@ -124,7 +123,7 @@ public class Main
 			//execute unix find command
 			executor.submit(new ThreadedExecuteCommand(this.executeCommand));
 			// read gzip file and get parsedobject
-			executor.submit(new ThreadedReadGzip(this.readGzip, this.pathQueue, this.flagReadGzip));
+			executor.submit(new ThreadedReadGzip(this.readGzip, this.pathQueue, this.flagReadGzip, this.dataType));
 			// write parsed object to file
 			for (int i =0 ;i<writerThreads ;i++)
 				executor.submit(new ThreadedParsedObjectWriter(this.writers[i], this.parsedObjectQueue, this.flagWriter));

@@ -11,6 +11,7 @@ import java.util.zip.GZIPInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.wse.io.CommonCrawlParser;
 import com.wse.model.ParsedObject;
 import com.wse.util.ElapsedTime;
 import com.wse.util.SequenceGenerator;
@@ -35,7 +36,7 @@ public class ReadGzip
 		this.documentQueue = documentQueue;
 	}
 	
-	public void read(File file) throws InterruptedException
+	public void readNZ(File file) throws InterruptedException
 	{
 		ElapsedTime elapsedTime = new ElapsedTime();
 		try(FileInputStream fis = new FileInputStream(file)) 
@@ -98,6 +99,54 @@ public class ReadGzip
 
 	public double getAverageLengthOfDocuments() {
 		return averageLengthOfDocuments;
+	}
+	
+	public void readCC(File file) throws InterruptedException
+	{
+		ElapsedTime elapsedTime = new ElapsedTime();
+		try(FileInputStream fis = new FileInputStream(file)) 
+		{
+			GZIPInputStream gzis = new GZIPInputStream(fis);
+			InputStreamReader isr = new InputStreamReader(gzis);
+			try(BufferedReader br = new BufferedReader(isr))
+			{
+				int volumeId = SequenceGenerator.getNextInSequence(CommonCrawlParser.class);
+				int length;
+				for(int i=0;i<17;i++)
+				{
+					br.readLine();
+				}
+				while(br.readLine()!=null)
+				{
+					CommonCrawlParser ccp = new CommonCrawlParser(br);
+					StringBuilder sb = new StringBuilder();
+					try
+					{
+						length = ccp.readGzip(sb);
+					}
+					catch(NullPointerException e)
+					{
+						logger.error("End of Document Reached");
+						break;
+					}
+					if(length==-1)
+					{
+						break;
+					}
+					int documentId = SequenceGenerator.getNextInSequence(ReadGzip.class);
+					this.parsedObjectQueue.add(new ParsedObject(volumeId, documentId, sb));
+					this.documentQueue.add(documentId + "\t"+ file.getAbsolutePath() + "\t"+ this.size);
+				}
+			}
+		}
+		catch(IOException e)
+		{
+			logger.error(e.getMessage(), e);
+		}
+		catch(Exception e)
+		{
+			logger.error(e.getMessage(), e);
+		}
 	}
 }	
 
