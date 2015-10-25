@@ -10,7 +10,7 @@ public class DocumentWriter {
 	private final Logger logger = LoggerFactory.getLogger(DocumentWriter.class);
 	private FileWriter writer;
 	private String filePath;
-	private char prefix;
+	private char prefix='x';
 	private int count;
 	private int fileCount;
 

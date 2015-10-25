@@ -16,15 +16,12 @@ import com.wse.queryprocessing.DocumentAtATime;
 import com.wse.ranking.BM25;
 import com.wse.serialize.KryoSerializer;
 import com.wse.util.Config;
-import com.wse.util.FileReader;
 
 public class SearchMain 
 {
 	private Config config;
 	private DocumentAtATime daat;
 	private BM25 bm25;
-	private FileReader fileReader;
-	private LexiconObject[] lexicons;
 	private KryoSerializer kryoSerializer;
 	private MetaObject metaObject;
 	private Queue<ResultObject> roQueue;
@@ -38,10 +35,11 @@ public class SearchMain
 	public SearchMain()
 	{
 		this.config = new Config(new File(configPropPath));
-		this.fileReader = new FileReader(this.config.getOutputFilePath());
-		this.metaObject = this.kryoSerializer.deserialize();
 		this.lexiconObjectMap = new HashMap<>();
-		this.lexiconReader = new LexiconReader(config.getOutputFilePath(), lexiconObjectMap);
+		this.lexiconReader = new LexiconReader(this.config.getOutputFilePath(), lexiconObjectMap);
+		this.kryoSerializer = new KryoSerializer();
+		this.metaObject = this.kryoSerializer.deserialize();
+		
 		this.bm25 = new BM25(this.metaObject.getTotalDocuments(), this.metaObject.getAverageLengthOfDocuments());
 		this.documentReader = new DocumentReader(this.config.getOutputFilePath());
 		this.documentObjectMap = this.documentReader.getDocumentObjectMap();
@@ -50,16 +48,17 @@ public class SearchMain
 	public void getSearchResults(String searchQuery)
 	{
 		String[] searchTerms = searchQuery.split("\\s");
-		this.daat = new DocumentAtATime(searchTerms, this.lexicons, resultCount, this.bm25, this.documentObjectMap);
+		this.daat = new DocumentAtATime(searchTerms, this.lexiconObjectMap, resultCount, this.bm25, this.documentObjectMap);
 		roQueue = this.daat.getConjunctionResult();
-		for(ResultObject ro:roQueue)
+		while(!roQueue.isEmpty())
 		{
+			ResultObject ro = roQueue.poll();
 			DocumentObject documentObject = this.documentObjectMap.get(ro.getDocumentId());
 			System.out.println(documentObject.getDocumentPath() + " : " + ro.getBm25Score());
 		}
 	}
 	
-	public static void main()
+	public static void main(String[] args)
 	{
 		SearchMain sm = new SearchMain();
 		System.out.println("Search Query: ");

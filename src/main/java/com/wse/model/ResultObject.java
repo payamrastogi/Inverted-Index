@@ -1,8 +1,7 @@
 package com.wse.model;
 
-import java.util.Comparator;
 
-public class ResultObject implements Comparator<ResultObject>
+public class ResultObject implements Comparable<ResultObject>
 {
 	private long documentId;
 	private double bm25Score;
@@ -27,10 +26,14 @@ public class ResultObject implements Comparator<ResultObject>
 	{
 		return this.bm25Score;
 	}
+	
+	@Override
+	public String toString() {
+		return this.documentId+":" + this.bm25Score ;
+	}
 
 	@Override
-	public int compare(ResultObject r1, ResultObject r2)
-	{
-		return (int)Math.ceil(r2.bm25Score-r1.bm25Score);
+	public int compareTo(ResultObject r) {
+		return (int)Math.ceil(r.bm25Score-this.bm25Score);
 	}
 }

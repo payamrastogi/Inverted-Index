@@ -32,7 +32,7 @@ public class DocumentReader
 			String line = null;
 			while((line=br.readLine())!=null)
 			{
-				String[] tokens = line.split("\\s");
+				String[] tokens = line.split("\t");
 				if(tokens.length<3)
 					throw new IllegalArgumentException();
 				documentObjectMap.put(Long.parseLong(tokens[0]), new DocumentObject(Long.parseLong(tokens[0]), 

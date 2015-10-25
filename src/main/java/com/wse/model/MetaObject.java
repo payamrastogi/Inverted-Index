@@ -11,6 +11,11 @@ public class MetaObject
 		this.totalDocuments = totalDocuments;
 		this.averageLengthOfDocuments = averageLengthOfDocuments;
 	}
+	public MetaObject()
+	{
+		this.totalDocuments = 0;
+		this.averageLengthOfDocuments = 0.0;
+	}
 	
 	public long getTotalDocuments()
 	{
