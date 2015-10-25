@@ -11,3 +11,7 @@
     - BreakIterator : http://docs.oracle.com/javase/6/docs/api/java/text/BreakIterator.html
     - SequenceGenerator - http://codereview.stackexchange.com/questions/54641/thread-safe-integer-sequence
 	- Guava - https://code.google.com/p/guava-libraries/wiki/NewCollectionTypesExplained#Multiset
+	- FileUtils - https://commons.apache.org/proper/commons-io/apidocs/org/apache/commons/io/FileUtils.html
+	- http://stackoverflow.com/questions/15530484/how-to-switch-between-two-thread-back-and-forth
+	- VByte - https://github.com/rdfhdt/hdt-java/blob/master/hdt-java-core/src/main/java/org/rdfhdt/hdt/compact/integer/VByte.java
+	- Simple9 - https://github.com/choobin/simple9/blob/master/simple9.c

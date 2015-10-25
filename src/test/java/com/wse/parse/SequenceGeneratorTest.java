@@ -9,7 +9,7 @@ public class SequenceGeneratorTest
 	@Test
 	public void testGetDocumentID()
 	{
-		//System.out.println(SequenceGenerator.getNextInSequence());
-		//System.out.println(SequenceGenerator.getNextInSequence());
+		System.out.println(SequenceGenerator.getNextInSequence(SequenceGeneratorTest.class));
+		System.out.println(SequenceGenerator.getNextInSequence(SequenceGeneratorTest.class));
 	}
 }

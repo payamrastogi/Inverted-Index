@@ -1,5 +1,5 @@
 package com.wse.util;
-
+//to calculate execution time
 public class ElapsedTime 
 {
 	private final long startTime;
