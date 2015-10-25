@@ -1,0 +1,136 @@
+WARC/1.0
+WARC-Type: conversion
+WARC-Target-URI: http://news.bbc.co.uk/2/hi/africa/3414345.stm
+WARC-Date: 2014-08-02T09:52:13Z
+WARC-Record-ID: <urn:uuid:007d632a-ab5a-4c4e-afc2-c455066a82de>
+WARC-Refers-To: <urn:uuid:ffbfb0c0-6456-42b0-af03-3867be6fc09f>
+WARC-Block-Digest: sha1:JROHLCS5SKMBR6XY46WXREW7RXM64EJC
+Content-Type: text/plain
+Content-Length: 6724
+
+BBC NEWS | Africa | Namibia braces for Nujoma exit
+[an error occurred while processing this directive]
+Low graphics|Accessibility help
+One-Minute World News
+News services
+Your news when you want it
+News Front Page
+Africa
+Americas
+Asia-Pacific
+Europe
+Middle East
+South Asia
+UK
+Business
+Health
+Science & Environment
+Technology
+Entertainment
+Also in the news
+-----------------
+Video and Audio
+-----------------
+Programmes
+Have Your Say
+In Pictures
+Country Profiles
+Special Reports
+RELATED BBC SITES
+SPORT
+WEATHER
+ON THIS DAY
+EDITORS' BLOG	Languages
+Somali
+French
+Arabic
+Swahili	Great Lakes
+Hausa	Portuguese Africa	More	Last Updated: Thursday, 22 January, 2004, 00:48 GMT
+E-mail this to a friend
+Printable version
+Namibia braces for Nujoma exit
+By Robin White
+BBC's former Focus on Africa editor
+President Sam Nujoma works in very pleasant surroundings in the small but beautiful old State House slap bang in the middle of Windhoek just a stone throw away from Namibia's equally beautiful parliament The question on everyone's lips is why on earth does he want to build a new State House. President Nujoma may be a hard act to follow in Namibia
+Currently a massive concrete presidential monstrosity is being erected on the outskirts of the capital costing millions of Namibian dollars at a time when the Namibian Government is appealing for relief aid for drought victims.
+President Nujoma will never occupy the new State House if he keeps his word and retires this year, but his successor will have lots of space to rattle around in.
+'Silly questions'
+With his white beard and ever-present smile, President Nujoma looks a bit like a black Father Christmas. He is not as amiable as he looks as he does not believe he should be answerable to journalists, or to the Namibian people as a whole. Mr Nujoma thinks he only has to answer to the ruling party South West African Peoples Organisation (Swapo)
+When I ask him why he is building a new State House, he replies: "Because that is the decision of Swapo."
+He claims the current State House is inadequate for a president's needs - it is too small and there is no room in the car park for the limousines of visiting dignitaries.
+But aren't there bigger priorities, like drought relief, I ask.
+Untested 'broom'
+Have you come all the way from London to ask me silly questions like that, he snaps back. That is the decision of Swapo which was elected by the vast majority of the Namibian people.
+Despite the presence of active opposition parties Swapo is strong
+Mr Nujoma is equally unforthcoming about his retirement plans or about who might succeed him. In spite of his sometimes abrupt manner, President Nujoma is still popular and if he really does retire, he will be a hard act to follow. There are no obvious candidates for the top job. Those closest to him are nearly as old as he is but much less revered. Swapo has to chose whether to go for a stop gap, like the current Lands Minister Hifikepunye Pohamba, who is the first minister to announce his intention of running for president, or find a younger, untested "broom".
+But the opposition are still not convinced that Mr Nujoma will retire.
+Ovamboland
+At his large office, overlooking fountains and flower beds at Windhoek's parliament, the leader of the opposition Congress of Democrats, Ben Ulenga, is planning optimistically for all eventualities. Mr Ulenga claims if Mr Nujoma stays in power, Namibians will be angry and turn against Swapo.
+And If he keeps his word, then Swapo will not be able to find anyone of similar stature - so either way the opposition will make inroads into Swapo's large parliamentary majority.
+But for Mr Ulenga to make it to the top, he will have to make a major impact in Ovamboland in the north which is Swapo's heartland and is by far the most densely populated region of Namibia. Land redistribution must be on the agreed willing buyer willing seller basis
+President Nujoma
+Although he is an Ovambo tribesman like President Nujoma, he did very poorly in Ovamboland at the last elections, but he now hopes to do much better with the president out of the way.
+Mugabe's admirer
+Swapo has been careful to secure the Ovambo vote by ploughing a large slice of development funding into the region, and the people there get more than their fair share of government positions.
+For the moment, Mr Nujoma's biggest headache is land reform. Huge tracks of land are still owned by a few white farmers and black Namibians are impatient at the slow pace of reform. White farmers say they are falling over backwards to please the government, but Mr Pahamba says that they are only handing over poor quality land. Meanwhile, the militant black farmer's union is threatening farm occupations similar to those in Zimbabwe. Guard dogs
+The union leaders also claim that, just like Zimbabwe, many white farms are ending up in the hands of government officials. President Nujoma - an admirer of Robert Mugabe - also points accusing fingers at whites, but he is adamant that Namibia is not Zimbabwe and that no-one will be allowed to break the law. Namibia remains amazingly unchanged after 14 years of independence. Land redistribution, he says, must be on the agreed willing seller, willing buyer basis. Namibia has remained amazingly unchanged after 14 years of independence. Windhoek is still a very white city. Shopping malls proliferate, supermarkets are well stocked, streets are immaculately clean. Everyone seems remarkably law abiding, and it is not just the security fences and guard dogs which are keeping people in order. Somehow, nobody wants to rock the boat, and if they do, they will have President Nujoma to contend with.
+E-mail this to a friend
+Printable version
+SEE ALSO:
+Deal ends Namibian land invasions
+07 Nov 03
+| Africa
+Surprise reshuffle in Namibia
+27 Aug 02
+| Africa
+Nujoma 'will not seek fourth term'
+26 Nov 01
+| Africa
+Nujoma's war on waste
+09 Feb 01
+| Africa
+Country profile: Namibia
+07 Nov 03
+| Country profiles
+Timeline: Namibia
+07 Nov 03
+| Country profiles
+RELATED INTERNET LINKS:
+Namibian Government
+The BBC is not responsible for the content of external internet sites
+TOP AFRICA STORIES
+Nigeria state oil firm 'insolvent'
+France to help Africa veterans
+Churches call for Sudan to split
+PRODUCTS AND SERVICES
+E-mail news
+Mobiles
+Alerts
+News feeds	Podcasts
+News Front Page
+| Africa
+| Americas
+| Asia-Pacific
+| Europe
+| Middle East
+| South Asia
+UK
+| Business
+| Entertainment
+| Science/Nature
+| Technology
+| Health
+Have Your Say
+| In Pictures
+| Week at a Glance
+| Country Profiles
+| In Depth
+| Programmes
+BBC Copyright NoticeMMIX
+Most Popular Now | 37,114 pages were read in the last minute.";
+Back to top ^^
+Help
+Privacy and cookies policy
+News sources
+About the BBC
+Contact us
