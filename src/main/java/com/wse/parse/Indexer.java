@@ -345,6 +345,6 @@ public class Indexer {
 	{
 		BlockingQueue<String> merge  = new ArrayBlockingQueue<>(1);
 		Indexer indexer = new Indexer(merge, merge, merge);
-		indexer.createFinalIndexVByte("/home/jenil/Downloads/indexer/output/m_0", "/home/jenil/Downloads/indexer/output/m_0_final");
+		indexer.createFinalIndexVByte("/Users/payamrastogi/Dropbox/workspace/indexer/output/m_172", "/Users/payamrastogi/Dropbox/workspace/indexer/output/index");
 	}
 }

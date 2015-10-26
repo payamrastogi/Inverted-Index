@@ -2,14 +2,19 @@ package com.wse.model;
 
 import java.util.Comparator;
 
-public class LexiconObject implements Comparator<LexiconObject>
+public class LexiconObject
 {
 	private String word;
-	private int postingListStart;
-	private int postingListEnd;
+	private long postingListStart;
+	private long postingListEnd;
 	private int postingListLength;
 	
-	public LexiconObject(String word, int postingListStart, int postingListEnd, int postingListLength)
+	public LexiconObject()
+	{
+		
+	}
+	
+	public LexiconObject(String word, long postingListStart, long postingListEnd, int postingListLength)
 	{
 		this.word = word;
 		this.postingListStart = postingListStart;
@@ -22,12 +27,12 @@ public class LexiconObject implements Comparator<LexiconObject>
 		return this.word;
 	}
 	
-	public int getPostingListStart()
+	public long getPostingListStart()
 	{
 		return this.postingListStart;
 	}
 	
-	public int getPostingListEnd()
+	public long getPostingListEnd()
 	{
 		return this.postingListEnd;
 	}
@@ -36,11 +41,4 @@ public class LexiconObject implements Comparator<LexiconObject>
 	{
 		return this.postingListLength;
 	}
-	
-	@Override
-	public int compare(LexiconObject l1, LexiconObject l2) 
-	{
-		return l1.getWord().compareTo(l2.getWord());
-	}
-	
 }

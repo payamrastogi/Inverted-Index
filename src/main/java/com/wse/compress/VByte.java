@@ -18,22 +18,22 @@ public class VByte
 			throw new IllegalArgumentException("only encode positive numbers in vbyte");
 		while(number > 127)
 		{
-			out.write((byte)(number & 127));
+			out.write((int)(number & 127));
 			number >>>= 7;
 			++count;
 		}
-		out.write((byte)(number | 0x80));
+		out.write((int)(number | 0x80));
 		return ++count;
 	}
 	
-	public long decode(RandomAccessFile randomAccessFile, long filePointer)
+	public long decode(RandomAccessFile randomAccessFile,long filePointer)
 	{
 		long out = 0;
 		try
 		{
 			int shift = 0;
 			randomAccessFile.seek(filePointer);
-			long readByte = randomAccessFile.read();
+			int readByte = randomAccessFile.read();
 			if(readByte ==-1)
 				throw new EOFException();
 			while((readByte & 0x80)==0)
