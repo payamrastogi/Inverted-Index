@@ -16,7 +16,7 @@ public class CommonCrawlParser
 		this.br = br;
 	}
 	
-	public int readGzip(StringBuilder sb)
+	public int readGzip(StringBuilder sb, StringBuilder url)
 	{
 		int length=-1;
 		try
@@ -37,6 +37,18 @@ public class CommonCrawlParser
 					{
 						logger.error(e.getMessage(), e);
 						length = -1;
+					}
+				}
+				if(line.startsWith("WARC-Target-URI:"))
+				{
+					try
+					{
+						url.append(line.split("\\s+")[1]);
+					}
+					catch(Exception e)
+					{
+						logger.error(e.getMessage(), e);
+						url.append("http://exception.com");
 					}
 				}
 			}

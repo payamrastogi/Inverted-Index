@@ -6,6 +6,11 @@ public class DocumentObject
 	private String documentPath;
 	private long documentLength;
 	
+	public DocumentObject()
+	{
+		
+	}
+	
 	public DocumentObject(long documentId, String documentPath, long documentLength)
 	{
 		this.documentId = documentId;

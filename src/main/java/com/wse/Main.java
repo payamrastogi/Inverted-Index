@@ -99,10 +99,9 @@ public class Main
 		char ch = 'a' ;
 		for (int i =0 ;i<writerThreads ;i++) 
 			this.writers[i] = new ParsedObjectWriter(this.config.getOutputFilePath(),ch++, this.stopWords, this.toSortQueue);
-		//this.documentWriter = new DocumentWriter(this.config.getOutputFilePath());
 	}
 	
-	public static void main(String args[]) throws Exception
+	public static void main(String[] args) throws Exception
 	{
 		ElapsedTime elapsedTime = new ElapsedTime();
 		Main main = new Main();
@@ -136,22 +135,16 @@ public class Main
 			executor.submit(new ThreadedUnixMerge(this.unixMerge, this.toMergeQueue1, this.toMergeQueue2, this.flag1, this.flag2));
 			//executor.submit(new ThreadedLexiconWriter(this.lexiconQueue, this.config.getOutputFilePath(), this.lexiconCount));
 			executor.shutdownNow();
-		    executor.awaitTermination(5000, TimeUnit.SECONDS);
+		    executor.awaitTermination(15000, TimeUnit.SECONDS);
 		    
-		   /* ExecutorService executor1 = Executors.newCachedThreadPool();	
-		    executor1.submit(new ThreadedLexiconWriter(this.lexiconQueue, this.config.getOutputFilePath(), this.lexiconCount));
-		    */
 		    //create final index
 		    String inputFilePath = toMergeQueue1.isEmpty()?toMergeQueue2.poll():toMergeQueue1.poll();
 		    indexer.createFinalIndexVByte(inputFilePath, inputFilePath+"i");
 		    
-		   
-		   /* executor1.shutdownNow();
-		    executor1.awaitTermination(5000, TimeUnit.SECONDS);*/
-		    
 		    KryoSerializer kryoSerializer = new KryoSerializer();
 		    this.metaObject = new MetaObject(this.readGzip.getTotalDocuments(), this.readGzip.getAverageLengthOfDocuments());
 		    kryoSerializer.serialize(metaObject);
+		    
 			logger.debug(pathQueue.size()+"");
 			logger.debug(parsedObjectQueue.size()+"");
 			logger.debug(toSortQueue.size()+"");

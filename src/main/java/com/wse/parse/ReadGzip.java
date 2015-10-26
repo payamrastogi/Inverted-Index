@@ -80,7 +80,7 @@ public class ReadGzip
 					}
 				}		
 			}
-			this.averageLengthOfDocuments = this.averageLengthOfDocuments/this.totalDocuments; 
+			
 		} 
 		catch (IOException e) 
 		{
@@ -98,7 +98,7 @@ public class ReadGzip
 	}
 
 	public double getAverageLengthOfDocuments() {
-		return averageLengthOfDocuments;
+		return this.averageLengthOfDocuments/this.totalDocuments; 
 	}
 	
 	public void readCC(File file) throws InterruptedException
@@ -111,31 +111,31 @@ public class ReadGzip
 			try(BufferedReader br = new BufferedReader(isr))
 			{
 				int volumeId = SequenceGenerator.getNextInSequence(CommonCrawlParser.class);
-				int length;
 				for(int i=0;i<17;i++)
 				{
 					br.readLine();
 				}
 				while(br.readLine()!=null)
 				{
+					int length = 0;
 					CommonCrawlParser ccp = new CommonCrawlParser(br);
 					StringBuilder sb = new StringBuilder();
+					StringBuilder url = new StringBuilder();
 					try
 					{
-						length = ccp.readGzip(sb);
+						length = ccp.readGzip(sb, url);
+						this.averageLengthOfDocuments+=length;
 					}
 					catch(NullPointerException e)
 					{
 						logger.error("End of Document Reached");
 						break;
 					}
-					if(length==-1)
-					{
-						break;
-					}
 					int documentId = SequenceGenerator.getNextInSequence(ReadGzip.class);
-					this.parsedObjectQueue.add(new ParsedObject(volumeId, documentId, sb));
-					this.documentQueue.add(documentId + "\t"+ file.getAbsolutePath() + "\t"+ this.size);
+					//this.parsedObjectQueue.add(new ParsedObject(volumeId, documentId, sb));
+					this.documentQueue.add(documentId + "\t"+ url.toString() + "\t"+ length+"\n");
+					if(++this.totalDocuments%10000==0)
+						logger.debug("Done: "+ totalDocuments+" Total Time: "+elapsedTime.getTotalTimeInSeconds()+" seconds");
 				}
 			}
 		}
